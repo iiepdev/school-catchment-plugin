@@ -1,0 +1,4 @@
+EdPlanning/i18n
+venv/
+.venv/
+start_ide.bat
