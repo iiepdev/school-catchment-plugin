@@ -2,3 +2,7 @@ EdPlanning/i18n
 venv/
 .venv/
 start_ide.bat
+*.osm.pbf
+*.jar
+gh/graph-cache
+gh/logs
