@@ -3,11 +3,15 @@ from typing import Callable, List, Optional
 from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QWidget
+from qgis.core import QgsProject
 from qgis.gui import QgisInterface
 
+from .core.isochrone_creator import IsochroneCreator
 from .qgis_plugin_tools.tools.custom_logging import setup_logger, teardown_logger
 from .qgis_plugin_tools.tools.i18n import setup_translation, tr
 from .qgis_plugin_tools.tools.resources import plugin_name
+from .qgis_plugin_tools.tools.settings import get_setting, set_setting
+from .ui.maindialog import MainDialog
 
 
 class Plugin:
@@ -31,6 +35,10 @@ class Plugin:
 
         self.actions: List[QAction] = []
         self.menu = tr(plugin_name())
+
+        self.dlg = MainDialog()
+        if not get_setting("gh_url"):
+            set_setting("gh_url", "http://localhost:8989/")
 
     def add_action(
         self,
@@ -105,7 +113,6 @@ class Plugin:
             text=tr(plugin_name()),
             callback=self.run,
             parent=self.iface.mainWindow(),
-            add_to_toolbar=False,
         )
 
     def onClosePlugin(self) -> None:  # noqa N802
@@ -121,4 +128,10 @@ class Plugin:
 
     def run(self) -> None:
         """Run method that performs all the real work"""
-        print("Hello QGIS plugin")
+        self.dlg.show()
+
+        if self.dlg.exec_():
+            opts = self.dlg.read_isochrone_options()
+            set_setting("gh_url", opts.url)
+            isochrone_layer = IsochroneCreator(opts).create_isochrone_layer()
+            QgsProject.instance().addMapLayer(isochrone_layer)

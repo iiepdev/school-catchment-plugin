@@ -6,3 +6,4 @@ start_ide.bat
 *.jar
 gh/graph-cache
 gh/logs
+.idea
