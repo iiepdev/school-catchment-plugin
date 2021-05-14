@@ -23,13 +23,13 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts.layer = self.combobox_layer.currentLayer()
         opts.distance = self.spinbox_distance.value()
 
-        unit = self.__get_radiobtn_name(self.hlayout_units)
+        unit = self.__get_radiobtn_name(self.groupbox_units)
         if unit == "radiobtn_mins":
             opts.unit = Unit.MINUTES
         elif unit == "radiobtn_meters":
             opts.unit = Unit.MINUTES
 
-        profile = self.__get_radiobtn_name(self.glayout_profile)
+        profile = self.__get_radiobtn_name(self.groupbox_profile)
         if profile == "radiobtn_walking":
             opts.profile = Profile.WALKING
         elif profile == "radiobtn_hiking":
@@ -44,7 +44,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
     @staticmethod
     def __get_radiobtn_name(parent: QWidget) -> str:
         for radio_button in parent.findChildren(QRadioButton):
-            if radio_button.checked():
+            if radio_button.isChecked():
                 return radio_button.objectName()
         raise Exception("No checked radio buttons found")  # TODO: exception
 
