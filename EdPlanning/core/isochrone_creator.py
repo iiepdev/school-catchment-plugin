@@ -1,17 +1,18 @@
 from typing import Optional
+from dataclasses import dataclass
 
 from qgis.core import QgsVectorLayer
 
 from ..definitions.constants import Profile, Unit
 
 
+@dataclass
 class IsochroneOpts:
-    def __init__(self) -> None:
-        self.url: str = ""
-        self.layer: Optional[QgsVectorLayer] = None
-        self.distance: Optional[int] = None
-        self.unit: Optional[Unit] = None
-        self.profile: Optional[Profile] = None
+    url: str = ""
+    layer: Optional[QgsVectorLayer] = None
+    distance: Optional[int] = None
+    unit: Optional[Unit] = None
+    profile: Optional[Profile] = None
 
     def check_if_opts_set(self) -> bool:
         if None in [self.layer, self.distance, self.unit, self.profile]:
