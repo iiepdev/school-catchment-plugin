@@ -7,6 +7,28 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
+QGIS plugin for analysing school locations based on Openstreetmap data.
+
+Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (foot, hike, bike, car) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
+
+The plugin employs the (Graphhopper routing backend)[https://github.com/graphhopper/graphhopper]. Therefore, you must have a Graphhopper instance running, or you may use any commercial Graphhopper service. We assume your Graphhopper config contains at least the following routing profiles:
+
+```
+  profiles:
+    - name: foot
+      vehicle: foot
+      weighting: fastest
+    - name: hike
+      vehicle: hike
+      weighting: shortest
+    - name: bike
+      vehicle: bike
+      weighting: fastest
+    - name: car
+      vehicle: car
+      weighting: fastest
+```
+
 ### Development
 
 Refer to [development](docs/development.md) for developing this QGIS3 plugin.
