@@ -3,7 +3,7 @@ from typing import Callable, List, Optional
 from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QWidget
-from qgis.core import QgsProject
+from qgis.core import QgsLayerTreeLayer, QgsProject
 from qgis.gui import QgisInterface
 
 from .core.isochrone_creator import IsochroneCreator
@@ -132,6 +132,9 @@ class Plugin:
 
         if self.dlg.exec_():
             opts = self.dlg.read_isochrone_options()
-            set_setting("gh_url", opts.url)
-            isochrone_layer = IsochroneCreator(opts).create_isochrone_layer()
-            QgsProject.instance().addMapLayer(isochrone_layer)
+            if opts.check_if_opts_set():
+                set_setting("gh_url", opts.url)
+                isochrone_layer = IsochroneCreator(opts).create_isochrone_layer()
+                QgsProject.instance().addMapLayer(isochrone_layer, False)
+                root = QgsProject.instance().layerTreeRoot()
+                root.insertChildNode(1, QgsLayerTreeLayer(isochrone_layer))

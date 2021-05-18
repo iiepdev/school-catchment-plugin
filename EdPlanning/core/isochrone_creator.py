@@ -92,6 +92,4 @@ class IsochroneCreator:
                     f"{idx} out of {self.opts.layer.featureCount()} objects fetched"
                 )
         isochrone_layer.updateExtents()
-        QgsProject.instance().addMapLayer(isochrone_layer, False)
-        root = QgsProject.instance().layerTreeRoot()
-        root.insertChildNode(1, QgsLayerTreeLayer(isochrone_layer))
+        return isochrone_layer
