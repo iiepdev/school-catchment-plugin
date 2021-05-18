@@ -6,9 +6,7 @@ from typing import Optional
 from qgis.core import (
     QgsFeature,
     QgsGeometry,
-    QgsLayerTreeLayer,
     QgsPointXY,
-    QgsProject,
     QgsVectorLayer,
 )
 
@@ -39,30 +37,30 @@ class IsochroneOpts:
 class IsochroneCreator:
     def __init__(self, opts: IsochroneOpts) -> None:
         self.opts = opts
-        self.base_url = self.opts.url
-        if not self.base_url[-1] == "/":
-            self.base_url += "/"
-        self.base_url += "isochrone"
-        self.params = {
-            "profile": self.opts.profile.value,
-            "buckets": 4,
-        }
-        if self.opts.unit == Unit.METERS:
-            self.params["distance_limit"] = self.opts.distance
-            self.params["time_limit"] = -1
-        else:
-            self.params["time_limit"] = 60 * self.opts.distance
+        # no type checking needed, since we check if options are set
+        if self.opts.check_if_opts_set():
+            self.base_url = self.opts.url
+            if not self.base_url[-1] == "/":
+                self.base_url += "/"
+            self.base_url += "isochrone"
+            self.params = {
+                "profile": self.opts.profile.value,  # type: ignore
+                "buckets": 1,
+            }
+            if self.opts.unit == Unit.METERS:
+                self.params["distance_limit"] = self.opts.distance
+                self.params["time_limit"] = -1
+            else:
+                self.params["time_limit"] = 60 * self.opts.distance  # type: ignore
 
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
-        layer_name = (
-            f"{self.opts.distance} {self.opts.unit.value} by {self.opts.profile.value}"
-        )
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} by {self.opts.profile.value}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )
         isochrone_layer.renderer().symbol().setOpacity(0.25)
-        for idx, point in enumerate(self.opts.layer.getFeatures()):
+        for idx, point in enumerate(self.opts.layer.getFeatures()):  # type: ignore
             point = point.geometry().asPoint()
             isochrone_params = self.params
             isochrone_params["point"] = f"{point.y()},{point.x()}"
@@ -89,7 +87,7 @@ class IsochroneCreator:
             # update layer's extent when new features have been added
             if idx and idx % 10 == 0:
                 LOGGER.info(
-                    f"{idx} out of {self.opts.layer.featureCount()} objects fetched"
+                    f"{idx} out of {self.opts.layer.featureCount()} objects fetched"  # type: ignore  # noqa
                 )
         isochrone_layer.updateExtents()
         return isochrone_layer

@@ -132,6 +132,7 @@ class Plugin:
 
         if self.dlg.exec_():
             opts = self.dlg.read_isochrone_options()
+            # no type checking needed, since we check if options are set before run
             if opts.check_if_opts_set():
                 set_setting("gh_url", opts.url)
                 isochrone_layer = IsochroneCreator(opts).create_isochrone_layer()
