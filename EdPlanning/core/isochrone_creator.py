@@ -3,12 +3,7 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
-from qgis.core import (
-    QgsFeature,
-    QgsGeometry,
-    QgsPointXY,
-    QgsVectorLayer,
-)
+from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
 
 from ..definitions.constants import Profile, Unit
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
