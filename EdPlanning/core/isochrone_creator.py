@@ -1,7 +1,7 @@
 import json
 import logging
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Dict
 
 from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
 
@@ -48,6 +48,18 @@ class IsochroneCreator:
             else:
                 self.params["time_limit"] = 60 * self.opts.distance  # type: ignore
 
+    def __fetch_bucketed_isochrones(self, point: QgsPointXY) -> List[Dict]:
+        # the API may return multiple isochrones for a single point
+        point = point.geometry().asPoint()
+        isochrone_params = self.params
+        isochrone_params["point"] = f"{point.y()},{point.x()}"
+        try:
+            isochrone_json = fetch(self.base_url, params=isochrone_params)
+        except QgsPluginNetworkException as e:
+            LOGGER.warn(f"Request failed for point {point}: {e}")
+            return []
+        return json.loads(isochrone_json)["polygons"]
+
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
         layer_name = f"{self.opts.distance} {self.opts.unit.value} by {self.opts.profile.value}"  # type: ignore  # noqa
@@ -56,14 +68,7 @@ class IsochroneCreator:
         )
         isochrone_layer.renderer().symbol().setOpacity(0.25)
         for idx, point in enumerate(self.opts.layer.getFeatures()):  # type: ignore
-            point = point.geometry().asPoint()
-            isochrone_params = self.params
-            isochrone_params["point"] = f"{point.y()},{point.x()}"
-            try:
-                isochrone_json = fetch(self.base_url, params=isochrone_params)
-            except QgsPluginNetworkException as e:
-                LOGGER.warn(f"Request failed for point {point}: {e}")
-            bucketed_isochrones = json.loads(isochrone_json)["polygons"]
+            bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
                 feature = QgsFeature()
                 feature.setGeometry(
@@ -79,10 +84,10 @@ class IsochroneCreator:
                     )
                 )
                 isochrone_layer.dataProvider().addFeature(feature)
-            # update layer's extent when new features have been added
             if idx and idx % 10 == 0:
                 LOGGER.info(
                     f"{idx} out of {self.opts.layer.featureCount()} objects fetched"  # type: ignore  # noqa
                 )
+        # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
         return isochrone_layer
