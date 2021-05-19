@@ -3,13 +3,18 @@
 """
 This class contains fixtures and common helper function to keep the test files shorter
 """
+import os
+from typing import Callable, Dict, Optional
+
 import pytest
-from qgis.core import QgsVectorLayer
+from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
 
 from EdPlanning.core.isochrone_creator import IsochroneOpts
 from EdPlanning.definitions.constants import Profile, Unit
 
 from ..qgis_plugin_tools.testing.utilities import get_qgis_app
+from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
+from ..qgis_plugin_tools.tools.i18n import tr
 
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
@@ -21,8 +26,46 @@ def new_project() -> None:
 
 
 @pytest.fixture(scope="function")
-def vector_layer() -> None:
-    yield QgsVectorLayer()
+def mock_fetch(mocker, request) -> None:
+    """Makes fetch return JSON for a specified URL, exception otherwise.
+    Use by calling mock_fetch(desired_url) in a test.
+    """
+
+    def _mock_fetch(url: str) -> Callable:
+        def mocked_fetch(
+            incoming_url: str, params: Optional[Dict[str, str]] = None
+        ) -> str:
+            if incoming_url == url:
+                with open(
+                    os.path.join(request.fspath.dirname, "fixtures", "isochrones.json")
+                ) as f:
+                    return f.read()
+            raise QgsPluginNetworkException(tr("Request failed"))
+
+        mocker.patch("EdPlanning.core.isochrone_creator.fetch", new=mocked_fetch)
+
+    yield _mock_fetch
+
+
+@pytest.fixture(scope="function")
+def point() -> None:
+    yield QgsPointXY(1.0, 1.0)
+
+
+@pytest.fixture(scope="function")
+def point_feature(point) -> None:
+    feature = QgsFeature()
+    feature.setGeometry(QgsGeometry.fromPointXY(point))
+    yield feature
+
+
+@pytest.fixture(scope="function")
+def vector_layer(point_feature) -> None:
+    layer = QgsVectorLayer("Point?crs=epsg:4326&index=yes", "test_points", "memory")
+    provider = layer.dataProvider()
+    provider.addFeature(point_feature)
+    layer.updateExtents()
+    yield layer
 
 
 @pytest.fixture(scope="function")
