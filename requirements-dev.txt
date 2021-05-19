@@ -1,3 +1,4 @@
 pre-commit>=2.12.1
 pytest~=6.2.3
+pytest-mock~=3.6.1
 qgis_plugin_ci~=1.8.4
