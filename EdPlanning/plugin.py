@@ -3,11 +3,15 @@ from typing import Callable, List, Optional
 from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QWidget
-from qgis.core import QgsLayerTreeLayer, QgsProject
+from qgis.core import QgsApplication
 from qgis.gui import QgisInterface
 
 from .core.isochrone_creator import IsochroneCreator
-from .qgis_plugin_tools.tools.custom_logging import setup_logger, teardown_logger
+from .qgis_plugin_tools.tools.custom_logging import (
+    setup_logger,
+    setup_task_logger,
+    teardown_logger,
+)
 from .qgis_plugin_tools.tools.i18n import setup_translation, tr
 from .qgis_plugin_tools.tools.resources import plugin_name
 from .qgis_plugin_tools.tools.settings import get_setting, set_setting
@@ -20,8 +24,13 @@ class Plugin:
     def __init__(self, iface: QgisInterface) -> None:
 
         self.iface = iface
+        # store the task here so it survives garbage collection after run method returns
+        self.creator: Optional[IsochroneCreator] = None
 
+        # conventional logger for the main thread
         setup_logger(plugin_name())
+        # separate task logger that only logs to QGIS UI
+        setup_task_logger(plugin_name())
 
         # initialize locale
         locale, file_path = setup_translation()
@@ -135,7 +144,5 @@ class Plugin:
             # no type checking needed, since we check if options are set before run
             if opts.check_if_opts_set():
                 set_setting("gh_url", opts.url)
-                isochrone_layer = IsochroneCreator(opts).create_isochrone_layer()
-                QgsProject.instance().addMapLayer(isochrone_layer, False)
-                root = QgsProject.instance().layerTreeRoot()
-                root.insertChildNode(1, QgsLayerTreeLayer(isochrone_layer))
+                self.creator = IsochroneCreator(opts)
+                QgsApplication.taskManager().addTask(self.creator)

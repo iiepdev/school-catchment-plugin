@@ -3,14 +3,25 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
-from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
+from qgis.core import (
+    QgsFeature,
+    QgsGeometry,
+    QgsLayerTreeLayer,
+    QgsPointXY,
+    QgsProject,
+    QgsTask,
+    QgsVectorLayer,
+)
 
 from ..definitions.constants import Profile, Unit
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
 from ..qgis_plugin_tools.tools.network import fetch
 from ..qgis_plugin_tools.tools.resources import plugin_name
 
-LOGGER = logging.getLogger(plugin_name())
+# from qgis.PyQt.QtCore import QCoreApplication
+
+
+LOGGER = logging.getLogger(f"{plugin_name()}_task")
 
 
 @dataclass
@@ -29,9 +40,11 @@ class IsochroneOpts:
         return True
 
 
-class IsochroneCreator:
+class IsochroneCreator(QgsTask):
     def __init__(self, opts: IsochroneOpts) -> None:
         self.opts = opts
+        self.result_layer: Optional[QgsVectorLayer] = None
+        self.points = []
         # no type checking needed, since we check if options are set
         if self.opts.check_if_opts_set():
             self.base_url = self.opts.url
@@ -41,12 +54,57 @@ class IsochroneCreator:
             self.params = {
                 "profile": self.opts.profile.value,  # type: ignore
                 "buckets": 1,
+                "reverse_flow": True,
             }
             if self.opts.unit == Unit.METERS:
                 self.params["distance_limit"] = self.opts.distance
                 self.params["time_limit"] = -1
             else:
                 self.params["time_limit"] = 60 * self.opts.distance  # type: ignore
+
+            # QgsVectorLayer from main thread may not be used in other threads?
+            # How about the QgsFeatures we list here, seems to work fine?
+            self.points = list(self.opts.layer.getFeatures())  # type: ignore
+        super().__init__(description="Fetching GraphHopper isochrones for all points")
+
+    def run(self) -> bool:
+        """
+        This method MUST return True or False.
+
+        Raising exceptions will crash QGIS, so we handle them
+        internally and raise them in self.finished
+
+        Any resulting QObjects must be manually moved to the main thread
+        when finished with them.
+        """
+        self.result_layer = self.create_isochrone_layer()
+        count = self.result_layer.featureCount()
+        LOGGER.info(f"Total of {count} isochrones generated.")
+        LOGGER.info(
+            f"Isochrones could not be generated for {len(self.points)-count} points."
+        )
+        # don't know if this is really needed or done automatically?
+        # finished will run in the main thread anyway
+        # self.result_layer.moveToThread(QCoreApplication.instance().thread())
+        return bool(count)
+
+    def finished(self, result: bool) -> None:
+        """
+        This function is automatically called when the task has
+        completed (successfully or not).
+
+        finished is always called from the main thread, so it's safe
+        to do GUI operations and raise Python exceptions here.
+        result is the return value from self.run.
+        """
+        if result and self.result_layer:
+            QgsProject.instance().addMapLayer(self.result_layer, False)
+            root = QgsProject.instance().layerTreeRoot()
+            root.insertChildNode(1, QgsLayerTreeLayer(self.result_layer))
+        elif not len(self.points):
+            LOGGER.warning("Point layer empty, no isochrones generated")
+        else:
+            LOGGER.warning("No isochrones returned for any of the points")
 
     def __fetch_bucketed_isochrones(self, point: QgsPointXY) -> List[Dict]:
         # the API may return multiple isochrones for a single point
@@ -56,18 +114,23 @@ class IsochroneCreator:
         try:
             isochrone_json = fetch(self.base_url, params=isochrone_params)
         except QgsPluginNetworkException as e:
-            LOGGER.warn(f"Request failed for point {point}: {e}")
+            LOGGER.warning(
+                f"Request failed for point {point.y()},{point.x()}: {e}. "
+                "Most likely isochrone could not be calculated because no roads were "
+                "found close to the point."
+            )
             return []
         return json.loads(isochrone_json)["polygons"]
 
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} by {self.opts.profile.value}"  # type: ignore  # noqa
+        direction = "to" if self.params["reverse_flow"] else "from"
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school by {self.opts.profile.value}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )
         isochrone_layer.renderer().symbol().setOpacity(0.25)
-        for idx, point in enumerate(self.opts.layer.getFeatures()):  # type: ignore
+        for idx, point in enumerate(self.points):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
                 feature = QgsFeature()
@@ -86,8 +149,13 @@ class IsochroneCreator:
                 isochrone_layer.dataProvider().addFeature(feature)
             if idx and idx % 10 == 0:
                 LOGGER.info(
-                    f"{idx} out of {self.opts.layer.featureCount()} objects fetched"  # type: ignore  # noqa
+                    f"{idx} out of {len(self.points)} objects fetched"  # type: ignore  # noqa
                 )
+            if self.isCanceled():
+                LOGGER.warning(
+                    f"Task cancelled, only {idx} out of {len(self.points)} isochrones calculated"  # type: ignore  # noqa
+                )
+                break
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
         return isochrone_layer
