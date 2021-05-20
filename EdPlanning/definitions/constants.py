@@ -7,7 +7,6 @@ class Unit(Enum):
 
 
 class Profile(Enum):
-    WALKING = "foot"
-    HIKING = "hike"
+    WALKING = "hike"
     CYCLING = "bike"
     DRIVING = "car"

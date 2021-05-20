@@ -32,8 +32,6 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         profile = self.__get_radiobtn_name(self.groupbox_profile)
         if profile == "radiobtn_walking":
             opts.profile = Profile.WALKING
-        elif profile == "radiobtn_hiking":
-            opts.profile = Profile.HIKING
         elif profile == "radiobtn_cycling":
             opts.profile = Profile.CYCLING
         elif profile == "radiobtn_driving":

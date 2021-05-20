@@ -75,6 +75,6 @@ def isochrone_opts(vector_layer) -> None:
         layer=vector_layer,
         distance=30,
         unit=Unit.MINUTES,
-        profile=Profile.HIKING,
+        profile=Profile.WALKING,
     )
     yield opts
