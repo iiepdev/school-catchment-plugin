@@ -84,6 +84,9 @@ jobs:
     needs: [linux_tests, windows_tests]
 
     steps:
+      - name: Debug print for github object
+        run: echo ${{ toJson(github) }}
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         if: ${{ github.event.type }} == "PullRequestEvent"
         with:
@@ -98,7 +101,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "dev"
           prerelease: true
-          title: "Development Build made for master branch commit ${{ github.event.head }}"
+          title: "Development Build made for master branch commit ${{ github.event.after }}"
 
       - uses: actions/checkout@v2
         with:
