@@ -1,10 +1,11 @@
 import pytest
-
-from qgis.core import QgsProject
-from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QDialogButtonBox
+from qgis.core import QgsProject
+
 from EdPlanning.plugin import Plugin
 from EdPlanning.qgis_plugin_tools.tools.settings import get_setting
+
 from .conftest import QGIS_APP
 
 
