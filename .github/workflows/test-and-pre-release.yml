@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - uses: "marvinpinto/action-automatic-releases@latest"
-        if:
+        if: github.event.type == "PullRequestEvent"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "dev"
@@ -93,12 +93,12 @@ jobs:
           title: "Development Build made for PR #${{ github.event.number }}"
 
       - uses: "marvinpinto/action-automatic-releases@latest"
-        if:
+        if: github.event.type == "PushEvent"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "dev"
           prerelease: true
-          title: "Development Build made for master branch commit #${{ github.event.head }}"
+          title: "Development Build made for master branch commit ${{ github.event.head }}"
 
       - uses: actions/checkout@v2
         with:
