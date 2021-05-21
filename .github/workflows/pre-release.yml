@@ -20,9 +20,9 @@ jobs:
           automatic_release_tag: "dev"
           prerelease: true
           title: "Development Build made for PR #${{ github.event.number }}"
-  
+
       - uses: "marvinpinto/action-automatic-releases@latest"
-        if: 
+        if:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "dev"
