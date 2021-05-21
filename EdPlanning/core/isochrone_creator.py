@@ -42,9 +42,11 @@ class IsochroneOpts:
 
 class IsochroneCreator(QgsTask):
     def __init__(self, opts: IsochroneOpts) -> None:
+        super().__init__(description="Fetching GraphHopper isochrones for all points")
         self.opts = opts
         self.result_layer: Optional[QgsVectorLayer] = None
         self.points = []
+        self.setProgress(0.0)
         # no type checking needed, since we check if options are set
         if self.opts.check_if_opts_set():
             self.base_url = self.opts.url
@@ -65,7 +67,6 @@ class IsochroneCreator(QgsTask):
             # QgsVectorLayer from main thread may not be used in other threads?
             # How about the QgsFeatures we list here, seems to work fine?
             self.points = list(self.opts.layer.getFeatures())  # type: ignore
-        super().__init__(description="Fetching GraphHopper isochrones for all points")
 
     def run(self) -> bool:
         """
@@ -156,6 +157,7 @@ class IsochroneCreator(QgsTask):
                     f"Task cancelled, only {idx} out of {len(self.points)} isochrones calculated"  # type: ignore  # noqa
                 )
                 break
+            self.setProgress(100 * (idx / len(self.points)))
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
         return isochrone_layer
