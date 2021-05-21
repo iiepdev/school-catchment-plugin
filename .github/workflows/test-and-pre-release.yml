@@ -77,3 +77,45 @@ jobs:
           $env:QGIS_PLUGIN_IN_CI=1
           python-qgis-ltr.bat -m pip install -q pytest pytest-mock pytest-qt
           python-qgis-ltr.bat -m pytest -v
+
+  pre-release:
+    name: "Pre Release"
+    runs-on: "ubuntu-latest"
+    needs: [linux_tests, windows_tests]
+
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        if:
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "dev"
+          prerelease: true
+          title: "Development Build made for PR #${{ github.event.number }}"
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        if:
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "dev"
+          prerelease: true
+          title: "Development Build made for master branch commit #${{ github.event.head }}"
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      #    Needed if the plugin is using Transifex, to have the lrelease command
+      #    - name: Install Qt lrelease
+      #      run: sudo apt-get update && sudo apt-get install qt5-default qttools5-dev-tools
+
+      - name: Install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci
+
+      # When Transifex is wanted: --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
+      - name: Deploy plugin
+        run: qgis-plugin-ci release dev --github-token ${{ secrets.GITHUB_TOKEN }} --disable-submodule-update
