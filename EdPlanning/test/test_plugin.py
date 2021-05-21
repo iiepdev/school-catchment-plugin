@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QDialogButtonBox
