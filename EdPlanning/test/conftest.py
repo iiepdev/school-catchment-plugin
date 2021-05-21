@@ -11,12 +11,14 @@ from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
 
 from EdPlanning.core.isochrone_creator import IsochroneOpts
 from EdPlanning.definitions.constants import Profile, Unit
+from EdPlanning.plugin import Plugin
 
 from ..qgis_plugin_tools.testing.utilities import get_qgis_app
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
 from ..qgis_plugin_tools.tools.i18n import tr
 
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+MOCK_URL = "http://mock.url"
 
 
 @pytest.fixture(autouse=True)
@@ -71,10 +73,19 @@ def vector_layer(point_feature) -> None:
 @pytest.fixture(scope="function")
 def isochrone_opts(vector_layer) -> None:
     opts = IsochroneOpts(
-        url="http://mock.url",
+        url=MOCK_URL,
         layer=vector_layer,
         distance=30,
         unit=Unit.MINUTES,
         profile=Profile.WALKING,
     )
     yield opts
+
+
+@pytest.fixture(scope="function")
+def new_plugin(isochrone_opts) -> None:
+    plugin = Plugin(IFACE)
+    plugin.initGui()
+    # mock options, since mock QgisInterface does not support QgsMapLayerComboBox
+    plugin.dlg.read_isochrone_options = lambda: isochrone_opts
+    yield plugin
