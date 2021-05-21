@@ -6,7 +6,7 @@ from qgis.core import QgsProject
 from EdPlanning.plugin import Plugin
 from EdPlanning.qgis_plugin_tools.tools.settings import get_setting
 
-from .conftest import QGIS_APP
+from .conftest import MOCK_URL, QGIS_APP
 
 
 def test_plugin(new_plugin, mock_fetch, qtbot):
@@ -17,7 +17,7 @@ def test_plugin(new_plugin, mock_fetch, qtbot):
             if buttonbox.buttonRole(button) == QDialogButtonBox.AcceptRole:
                 qtbot.mouseClick(button, Qt.LeftButton)
 
-    mock_fetch(get_setting("gh_url") + "/isochrone")
+    mock_fetch(MOCK_URL + "/isochrone")
     # set timer to click after plugin is run
     QTimer.singleShot(100, click_button)
     # start plugin event loop
