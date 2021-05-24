@@ -87,20 +87,20 @@ jobs:
       - uses: hmarr/debug-action@v2
 
       - uses: "marvinpinto/action-automatic-releases@latest"
-        if: ${{ github.event.type }} == "PullRequestEvent"
+        if: ${{ GITHUB_EVENT_NAME == 'pull_request' }}
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "dev"
+          automatic_release_tag: "dev-pr"
           prerelease: true
           title: "Development Build made for PR #${{ github.event.number }}"
 
       - uses: "marvinpinto/action-automatic-releases@latest"
-        if: ${{ github.event.type  }} == "PushEvent"
+        if: ${{ github.event.after != github.event.before }}
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "dev"
           prerelease: true
-          title: "Development Build made for master branch commit ${{ github.event.after }}"
+          title: "Development Build made for master branch"
 
       - uses: actions/checkout@v2
         with:
