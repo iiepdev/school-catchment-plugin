@@ -120,4 +120,10 @@ jobs:
 
       # When Transifex is wanted: --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
       - name: Deploy plugin
+        if: ${{ github.event.pull_request }}
         run: qgis-plugin-ci release dev-pr --github-token ${{ secrets.GITHUB_TOKEN }} --disable-submodule-update
+
+        # When Transifex is wanted: --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
+      - name: Deploy plugin
+        if: ${{ github.event.after != github.event.before }}
+        run: qgis-plugin-ci release dev --github-token ${{ secrets.GITHUB_TOKEN }} --disable-submodule-update
