@@ -15,9 +15,6 @@ The plugin employs the [Graphhopper routing backend](https://github.com/graphhop
 
 ```
   profiles:
-    - name: foot
-      vehicle: foot
-      weighting: fastest
     - name: hike
       vehicle: hike
       weighting: shortest
