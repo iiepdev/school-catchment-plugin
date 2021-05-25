@@ -1,4 +1,3 @@
-import logging
 from math import ceil, log
 from typing import Optional
 
@@ -102,7 +101,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         self.__update_duration_label()
 
     @pyqtSlot(int)
-    def on_spinbox_distance_valueChanged(self) -> None:
+    def on_spinbox_distance_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()
 
     def __update_unit_selector(self, selected_unit: Unit) -> None:
