@@ -27,7 +27,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         if unit == "radiobtn_mins":
             opts.unit = Unit.MINUTES
         elif unit == "radiobtn_meters":
-            opts.unit = Unit.MINUTES
+            opts.unit = Unit.METERS
 
         profile = self.__get_radiobtn_name(self.groupbox_profile)
         if profile == "radiobtn_walking":
