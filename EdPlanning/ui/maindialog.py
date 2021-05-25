@@ -1,4 +1,4 @@
-from math import ceil, pow
+from math import floor, pow
 from typing import Optional
 
 from PyQt5.QtCore import pyqtSlot
@@ -53,9 +53,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         Estimated duration of the calculation in minutes,
         assuming O(2^(5K-1) - 2^(4K-4)) scaling.
 
-        Here K is one step in the graph, and we assume the graph branches
-        once per minute of walking. This is a realistic magnitude
-        in case of neigborhoods made for walking. Simplifies to
+        Here K is one step in the graph. Simplifies to
         O(2^(5K)-2^(4K))~=O(2^(5K)) for large K.
         """
         opts = self.read_isochrone_options()
@@ -75,14 +73,15 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
                 # Normalize, knowing that 60 minute distance by car
                 # (equivalent of 600 minutes by foot) takes ~ 10 minute
                 # to calculate for 1000 points.
+                # No idea why K should be so small here.
                 minutes_per_thousand_points = 10 * pow(
-                    2, 5 * distance_in_minutes_by_foot - 3000
+                    2, distance_in_minutes_by_foot/100 - 6
                 )
                 # Network calls ~ 1 minute for 1000 pts.
                 total = float(count / 1000) * float(minutes_per_thousand_points + 1)
                 if total > 120:
                     raise TooHeavyOperationException()
-                return ceil(total)
+                return floor(total)
         return None
 
     @staticmethod
