@@ -3,7 +3,7 @@ from typing import Optional
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog, QRadioButton, QWidget
-from qgis.core import QgsMapLayerProxyModel
+from qgis.core import QgsMapLayer, QgsMapLayerProxyModel
 
 from ..core.isochrone_creator import IsochroneOpts
 from ..definitions.constants import Profile, Unit
@@ -112,6 +112,10 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
 
     @pyqtSlot()
     def on_radiobtn_driving_clicked(self) -> None:
+        self.__update_duration_label()
+
+    @pyqtSlot(QgsMapLayer)
+    def on_combobox_layer_layerChanged(self) -> None:  # noqa
         self.__update_duration_label()
 
     @pyqtSlot(int)
