@@ -75,7 +75,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
                 # to calculate for 1000 points.
                 # No idea why K should be so small here.
                 minutes_per_thousand_points = 10 * pow(
-                    2, distance_in_minutes_by_foot/100 - 6
+                    2, distance_in_minutes_by_foot / 100 - 6
                 )
                 # Network calls ~ 1 minute for 1000 pts.
                 total = float(count / 1000) * float(minutes_per_thousand_points + 1)
@@ -125,8 +125,8 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         """Sets unit spinbox min, max, and step values
         based on currently selected unit"""
         if selected_unit == Unit.MINUTES:
-            step = 1
-            min_ = 1
+            step = 5
+            min_ = 5
             max_ = 120
             default = 30
         elif selected_unit == Unit.METERS:
