@@ -138,6 +138,13 @@
       </layout>
      </item>
      <item>
+      <widget class="QLabel" name="duration_label">
+       <property name="text">
+        <string></string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QDialogButtonBox" name="buttonbox_main">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
