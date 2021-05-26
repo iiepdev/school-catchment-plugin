@@ -1,5 +1,5 @@
 """Panel core base class."""
-from typing import Dict
+from typing import Dict, Optional
 
 from PyQt5.QtWidgets import QDialog
 
@@ -14,7 +14,7 @@ class BasePanel:
     """
 
     def __init__(self, dialog: QDialog):
-        self._panel = None
+        self._panel: Optional[Panels] = None
         self._dialog = dialog
         self.elem_map: Dict[int, bool] = {}
 

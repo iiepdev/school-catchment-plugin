@@ -32,10 +32,10 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             Panels.Settings: SettingsPanel(self),
             Panels.About: AboutPanel(self),
         }
-        for i, panel in enumerate(self.panels):
+        for i, panel_enum in enumerate(self.panels):
             item = self.menu_widget.item(i)
-            item.setIcon(panel.icon)
-            self.panels[panel].panel = panel
+            item.setIcon(panel_enum.icon)
+            self.panels[panel_enum].panel = panel_enum
         # Change panel as menu item is changed
         self.menu_widget.currentRowChanged["int"].connect(
             self.stacked_widget.setCurrentIndex
