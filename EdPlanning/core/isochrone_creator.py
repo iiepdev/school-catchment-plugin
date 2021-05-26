@@ -125,8 +125,11 @@ class IsochroneCreator(QgsTask):
 
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
+        profile = (
+            f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
+        )
         direction = "to" if self.params["reverse_flow"] else "from"
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school by {self.opts.profile.value}"  # type: ignore  # noqa
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school{profile}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )
