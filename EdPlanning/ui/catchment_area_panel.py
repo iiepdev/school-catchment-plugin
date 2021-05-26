@@ -2,6 +2,7 @@ import logging
 from math import floor, pow
 from typing import Optional
 
+from PyQt5.QtWidgets import QDialog
 from qgis.core import QgsMapLayerProxyModel
 
 from ..definitions.constants import Profile, Unit
@@ -18,11 +19,11 @@ class TooHeavyOperationException(QgsPluginException):
 
 
 class CatchmentAreaPanel(BasePanel):
-    def __init__(self, dialog):
+    def __init__(self, dialog: QDialog) -> None:
         super().__init__(dialog)
         self.panel = Panels.CatchmentAreas
 
-    def setup_panel(self):
+    def setup_panel(self) -> None:
         self.dlg.combobox_layer.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.__update_duration_label()
 

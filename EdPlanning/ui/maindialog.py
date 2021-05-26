@@ -67,7 +67,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             opts.profile = Profile.DRIVING
         return opts
 
-    def _set_window_location(self):
+    def _set_window_location(self) -> None:
         ag = QDesktopWidget().availableGeometry()
         sg = QDesktopWidget().screenGeometry()
 

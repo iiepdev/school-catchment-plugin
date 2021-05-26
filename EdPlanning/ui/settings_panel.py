@@ -1,6 +1,8 @@
 import logging
 import webbrowser
 
+from PyQt5.QtWidgets import QDialog
+
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.custom_logging import (
     LogTarget,
@@ -17,11 +19,11 @@ LOGGING_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 class SettingsPanel(BasePanel):
-    def __init__(self, dialog):
+    def __init__(self, dialog: QDialog) -> None:
         super().__init__(dialog)
         self.panel = Panels.Settings
 
-    def setup_panel(self):
+    def setup_panel(self) -> None:
         self.dlg.combo_box_log_level_file.clear()
         self.dlg.combo_box_log_level_console.clear()
 

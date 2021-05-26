@@ -13,7 +13,7 @@ class BasePanel:
     licenced under GPL version 2
     """
 
-    def __init__(self, dialog: QDialog):
+    def __init__(self, dialog: QDialog) -> None:
         self._panel: Optional[Panels] = None
         self._dialog = dialog
         self.elem_map: Dict[int, bool] = {}
@@ -26,7 +26,7 @@ class BasePanel:
             raise NotImplementedError
 
     @panel.setter
-    def panel(self, panel: Panels):
+    def panel(self, panel: Panels) -> None:
         self._panel = panel
 
     @property
@@ -34,17 +34,17 @@ class BasePanel:
         """Return the dialog."""
         return self._dialog
 
-    def setup_panel(self):
+    def setup_panel(self) -> None:
         """Setup the UI for the panel."""
         raise QgsPluginNotImplementedException()
 
-    def teardown_panel(self):
+    def teardown_panel(self) -> None:
         """Teardown for the panels"""
 
-    def on_update_map_layers(self):
+    def on_update_map_layers(self) -> None:
         """Occurs when map layers are updated"""
 
-    def is_active(self):
+    def is_active(self) -> bool:
         """Is the panel currently active (selected)"""
         curr_panel = list(self.dlg.panels.keys())[self.dlg.menu_widget.currentRow()]
         return curr_panel == self.panel
