@@ -27,6 +27,7 @@ LOGGER = logging.getLogger(f"{plugin_name()}_task")
 @dataclass
 class IsochroneOpts:
     url: str = ""
+    api_key: str = ""
     layer: Optional[QgsVectorLayer] = None
     distance: Optional[int] = None
     unit: Optional[Unit] = None
@@ -58,6 +59,8 @@ class IsochroneCreator(QgsTask):
                 "buckets": 1,
                 "reverse_flow": True,
             }
+            if self.opts.api_key:
+                self.params["apikey"] = self.opts.api_key
             if self.opts.unit == Unit.METERS:
                 self.params["distance_limit"] = self.opts.distance
                 self.params["time_limit"] = -1

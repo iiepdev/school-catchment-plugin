@@ -49,6 +49,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
     def read_isochrone_options(self) -> IsochroneOpts:
         opts = IsochroneOpts()
         opts.url = self.lineedit_url.text()
+        opts.api_key = self.lineedit_apikey.text()
         opts.layer = self.combobox_layer.currentLayer()
         opts.distance = self.spinbox_distance.value()
 

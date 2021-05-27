@@ -262,7 +262,7 @@
             <item>
              <widget class="QgsCollapsibleGroupBox" name="mGroupBox_4">
               <property name="title">
-               <string>Graphhopper location</string>
+               <string>Graphhopper instance</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
@@ -276,6 +276,20 @@
                  </item>
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="lineedit_url">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_gh_apikey">
+                   <property name="text">
+                    <string>API Key</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="lineedit_apikey">
                    <property name="text">
                     <string/>
                    </property>
