@@ -60,7 +60,7 @@ class IsochroneCreator(QgsTask):
                 "reverse_flow": True,
             }
             if self.opts.api_key:
-                self.params["apikey"] = self.opts.api_key
+                self.params["key"] = self.opts.api_key
             if self.opts.unit == Unit.METERS:
                 self.params["distance_limit"] = self.opts.distance
                 self.params["time_limit"] = -1
