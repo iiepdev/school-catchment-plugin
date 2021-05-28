@@ -26,6 +26,9 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         self.setupUi(self)
         self.lineedit_url.setText(get_setting("gh_url"))
         self.file_widget.setFilePath(get_setting("result_dir"))
+        # only check write to file if path was found
+        if self.file_widget.filePath():
+            self.checkbox_file.setChecked(True)
 
         self._set_window_location()
         self.panels = {
