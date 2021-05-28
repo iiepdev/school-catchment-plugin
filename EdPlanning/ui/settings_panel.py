@@ -2,6 +2,7 @@ import logging
 import webbrowser
 
 from PyQt5.QtWidgets import QDialog
+from qgis.gui import QgsFileWidget
 
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.custom_logging import (
@@ -24,6 +25,11 @@ class SettingsPanel(BasePanel):
         self.panel = Panels.Settings
 
     def setup_panel(self) -> None:
+        # connect the signals, since pyqt slot decorator cannot be used
+        self.dlg.checkbox_file.clicked.connect(self.on_checkbox_file_clicked)
+
+        self.dlg.file_widget.setStorageMode(QgsFileWidget.StorageMode.GetDirectory)
+
         self.dlg.combo_box_log_level_file.clear()
         self.dlg.combo_box_log_level_console.clear()
 
@@ -47,3 +53,6 @@ class SettingsPanel(BasePanel):
         self.dlg.btn_open_log.clicked.connect(
             lambda _: webbrowser.open(plugin_path("logs", f"{plugin_name()}.log"))
         )
+
+    def on_checkbox_file_clicked(self) -> None:
+        self.dlg.file_widget.setEnabled(self.dlg.checkbox_file.isChecked())

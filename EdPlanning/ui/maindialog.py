@@ -50,6 +50,8 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts = IsochroneOpts()
         opts.url = self.lineedit_url.text()
         opts.api_key = self.lineedit_apikey.text()
+        opts.write_to_directory = self.checkbox_file.isChecked()
+        opts.directory = self.file_widget.filePath()
         opts.layer = self.combobox_layer.currentLayer()
         opts.distance = self.spinbox_distance.value()
 

@@ -1,15 +1,18 @@
 import json
 import logging
+import os
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from qgis.core import (
+    QgsCoordinateTransformContext,
     QgsFeature,
     QgsGeometry,
     QgsLayerTreeLayer,
     QgsPointXY,
     QgsProject,
     QgsTask,
+    QgsVectorFileWriter,
     QgsVectorLayer,
 )
 
@@ -32,6 +35,8 @@ class IsochroneOpts:
     distance: Optional[int] = None
     unit: Optional[Unit] = None
     profile: Optional[Profile] = None
+    write_to_directory: bool = False
+    directory: str = ""
 
     def check_if_opts_set(self) -> bool:
         if None in [self.layer, self.distance, self.unit, self.profile]:
@@ -168,4 +173,24 @@ class IsochroneCreator(QgsTask):
         self.__add_isochrones_to_layer(isochrone_layer)
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
+
+        # in case a directory was specified, save the layer to geopackage
+        geopackage_file = None
+        if self.opts.write_to_directory and self.opts.directory:
+            geopackage_file = os.path.join(self.opts.directory, f"{layer_name}.gpkg")
+            save_options = QgsVectorFileWriter.SaveVectorOptions()
+            error = QgsVectorFileWriter.writeAsVectorFormatV2(
+                isochrone_layer,
+                geopackage_file,
+                QgsCoordinateTransformContext(),
+                save_options,
+            )
+            if error[0]:
+                LOGGER.warning(f"Could not save file: {error[0]}")
+            else:
+                # in case the layer was saved, return the saved layer instead
+                LOGGER.info(f"Saved to file {geopackage_file}")
+                isochrone_layer = QgsVectorLayer(geopackage_file, layer_name, "ogr")
+
+        isochrone_layer.renderer().symbol().setOpacity(0.25)
         return isochrone_layer
