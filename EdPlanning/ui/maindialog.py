@@ -1,6 +1,12 @@
 import logging
 
-from PyQt5.QtWidgets import QDesktopWidget, QDialog, QRadioButton, QWidget
+from PyQt5.QtWidgets import (
+    QDesktopWidget,
+    QDialog,
+    QDialogButtonBox,
+    QRadioButton,
+    QWidget,
+)
 
 from ..core.isochrone_creator import IsochroneOpts
 from ..definitions.constants import Profile, Unit
@@ -24,6 +30,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
+        self.buttonbox_main.button(QDialogButtonBox.Ok).setText("Run")
         self.lineedit_url.setText(get_setting("gh_url"))
         self.file_widget.setFilePath(get_setting("result_dir"))
         # only check write to file if path was found
