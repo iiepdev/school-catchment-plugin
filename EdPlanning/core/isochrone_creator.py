@@ -126,17 +126,7 @@ class IsochroneCreator(QgsTask):
             return []
         return json.loads(isochrone_json)["polygons"]
 
-    def create_isochrone_layer(self) -> QgsVectorLayer:
-        """Creates a polygon QgsVectorLayer containing isochrones for points"""
-        profile = (
-            f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
-        )
-        direction = "to" if self.params["reverse_flow"] else "from"
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school{profile}"  # type: ignore  # noqa
-        isochrone_layer = QgsVectorLayer(
-            "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
-        )
-        isochrone_layer.renderer().symbol().setOpacity(0.25)
+    def __add_isochrones_to_layer(self, layer: QgsVectorLayer) -> None:
         for idx, point in enumerate(self.points):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
@@ -153,7 +143,7 @@ class IsochroneCreator(QgsTask):
                         ]
                     )
                 )
-                isochrone_layer.dataProvider().addFeature(feature)
+                layer.dataProvider().addFeature(feature)
             if idx and idx % 10 == 0:
                 LOGGER.info(
                     f"{idx} out of {len(self.points)} objects fetched"  # type: ignore  # noqa
@@ -164,6 +154,18 @@ class IsochroneCreator(QgsTask):
                 )
                 break
             self.setProgress(100 * (idx / len(self.points)))
+
+    def create_isochrone_layer(self) -> QgsVectorLayer:
+        """Creates a polygon QgsVectorLayer containing isochrones for points"""
+        profile = (
+            f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
+        )
+        direction = "to" if self.params["reverse_flow"] else "from"
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school{profile}"  # type: ignore  # noqa
+        isochrone_layer = QgsVectorLayer(
+            "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
+        )
+        self.__add_isochrones_to_layer(isochrone_layer)
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
         return isochrone_layer
