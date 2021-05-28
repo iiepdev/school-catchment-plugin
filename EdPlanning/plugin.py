@@ -144,5 +144,6 @@ class Plugin:
             # no type checking needed, since we check if options are set before run
             if opts.check_if_opts_set():
                 set_setting("gh_url", opts.url)
+                set_setting("result_dir", opts.directory)
                 self.creator = IsochroneCreator(opts)
                 QgsApplication.taskManager().addTask(self.creator)

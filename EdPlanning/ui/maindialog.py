@@ -25,6 +25,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         super().__init__()
         self.setupUi(self)
         self.lineedit_url.setText(get_setting("gh_url"))
+        self.file_widget.setFilePath(get_setting("result_dir"))
 
         self._set_window_location()
         self.panels = {
