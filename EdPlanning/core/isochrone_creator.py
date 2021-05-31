@@ -137,21 +137,25 @@ class IsochroneCreator(QgsTask):
         else:
             LOGGER.warning("No isochrones returned for any of the points")
 
-    def __fetch_bucketed_isochrones(self, point: QgsPointXY) -> List[Dict]:
-        # the API may return multiple isochrones for a single point
-        point = point.geometry().asPoint()
-        isochrone_params = self.params
-        isochrone_params["point"] = f"{point.y()},{point.x()}"
-        try:
-            isochrone_json = fetch(self.base_url, params=isochrone_params)
-        except QgsPluginNetworkException as e:
-            LOGGER.warning(
-                f"Request failed for point {point.y()},{point.x()}: {e}. "
-                "Most likely isochrone could not be calculated because no roads were "
-                "found close to the point."
-            )
-            return []
-        return json.loads(isochrone_json)["polygons"]
+    def __fetch_bucketed_isochrones(self, point: QgsFeature) -> List[Dict]:
+        # the API may return multiple isochrones for a single point (buckets)
+        geometry = point.geometry()
+        isochrones = []
+        # the geometry may be multipoint, handle each point
+        for point in geometry.parts():
+            isochrone_params = self.params
+            isochrone_params["point"] = f"{point.y()},{point.x()}"
+            try:
+                isochrone_json = fetch(self.base_url, params=isochrone_params)
+            except QgsPluginNetworkException as e:
+                LOGGER.warning(
+                    f"Request failed for point {point.y()},{point.x()}: {e}. "
+                    "Most likely isochrone could not be calculated because no roads "
+                    "were found close to the point."
+                )
+                return []
+            isochrones.extend(json.loads(isochrone_json)["polygons"])
+        return isochrones
 
     def __add_isochrones_to_layer(self, layer: QgsVectorLayer) -> None:
         LOGGER.info("Starting isochrone fetch...")
