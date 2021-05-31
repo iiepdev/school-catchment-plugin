@@ -4,12 +4,15 @@ import os
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+import qgis.processing
 from qgis.core import (
+    QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
     QgsFeature,
     QgsGeometry,
     QgsLayerTreeLayer,
     QgsPointXY,
+    QgsProcessing,
     QgsProject,
     QgsTask,
     QgsVectorFileWriter,
@@ -72,9 +75,24 @@ class IsochroneCreator(QgsTask):
             else:
                 self.params["time_limit"] = 60 * self.opts.distance  # type: ignore
 
+            # reproject layer if needed
+            layer: QgsVectorLayer = self.opts.layer
+            wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
+            if layer.crs() != wgs84:
+                LOGGER.info(
+                    f"Layer in {layer.crs().authid()}, reprojecting to WGS 84 first."
+                )
+                alg_params = {
+                    "INPUT": layer,
+                    "OUTPUT": QgsProcessing.TEMPORARY_OUTPUT,
+                    "TARGET_CRS": wgs84,
+                }
+                layer = qgis.processing.run("native:reprojectlayer", alg_params)[
+                    "OUTPUT"
+                ]
             # QgsVectorLayer from main thread may not be used in other threads?
             # How about the QgsFeatures we list here, seems to work fine?
-            self.points = list(self.opts.layer.getFeatures())  # type: ignore
+            self.points = list(layer.getFeatures())
 
     def run(self) -> bool:
         """
@@ -132,6 +150,7 @@ class IsochroneCreator(QgsTask):
         return json.loads(isochrone_json)["polygons"]
 
     def __add_isochrones_to_layer(self, layer: QgsVectorLayer) -> None:
+        LOGGER.info("Starting isochrone fetch...")
         for idx, point in enumerate(self.points):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
