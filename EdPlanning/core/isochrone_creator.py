@@ -59,6 +59,10 @@ class IsochroneCreator(QgsTask):
         # no type checking needed, since we check if options are set
         if self.opts.check_if_opts_set():
             self.base_url = self.opts.url
+            if not self.base_url.startswith("http://") and not self.base_url.startswith(
+                "https://"
+            ):
+                self.base_url = "https://" + self.base_url
             if not self.base_url[-1] == "/":
                 self.base_url += "/"
             self.base_url += "isochrone"
