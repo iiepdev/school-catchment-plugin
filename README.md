@@ -11,7 +11,7 @@
 
 QGIS plugin for analysing school accessibility based on OpenStreetMap data.
 
-![Isochrones in QGIS](imgs/ui_screenshot.png)
+![Isochrones in QGIS](imgs/ui_screenshot.PNG)
 
 Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (walking, cycling, driving) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
 
