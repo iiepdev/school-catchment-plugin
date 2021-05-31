@@ -6,10 +6,11 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 QGIS plugin for analysing school locations based on Openstreetmap data.
 
-Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (foot, hike, bike, car) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
+Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (walking, cycling, driving) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
 
 The plugin employs the [Graphhopper routing backend](https://github.com/graphhopper/graphhopper). Therefore, you must have a Graphhopper instance running, or you may use any commercial Graphhopper service. We assume your Graphhopper config contains at least the following routing profiles:
 
