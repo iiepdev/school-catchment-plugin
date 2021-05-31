@@ -1,3 +1,4 @@
+
 # EdPlanning
 ![tests](https://github.com/GispoCoding/edplanning/workflows/Tests/badge.svg)
 [![codecov.io](https://codecov.io/github/GispoCoding/edplanning/coverage.svg?branch=master)](https://codecov.io/github/GispoCoding/edplanning?branch=master)
@@ -8,11 +9,13 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-QGIS plugin for analysing school locations based on Openstreetmap data.
+QGIS plugin for analysing school accessibility based on OpenStreetMap data.
+
+![Isochrones in QGIS](imgs/ui_screenshot.png)
 
 Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (walking, cycling, driving) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
 
-The plugin employs the [Graphhopper routing backend](https://github.com/graphhopper/graphhopper). Therefore, you must have a Graphhopper instance running, or you may use any commercial Graphhopper service. We assume your Graphhopper config contains at least the following routing profiles:
+The plugin employs the [Graphhopper routing backend](https://github.com/graphhopper/graphhopper). Therefore, you must have a Graphhopper instance running, or you may use [a commercial Graphhopper service](https://www.graphhopper.com/). The plugin assumes your Graphhopper config contains at least the following routing profiles:
 
 ```
   profiles:
