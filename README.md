@@ -9,7 +9,7 @@
 
 QGIS plugin for analysing school locations based on Openstreetmap data.
 
-Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (foot, hike, bike, car) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
+Currently, the plugin calculates catchment areas (isochrones) to a specified layer of schools with a selected mode of transport (walking, cycling, driving) and a selected distance in meters or minutes (e.g. 1 kilometer, or 30 minutes of transit).
 
 The plugin employs the [Graphhopper routing backend](https://github.com/graphhopper/graphhopper). Therefore, you must have a Graphhopper instance running, or you may use any commercial Graphhopper service. We assume your Graphhopper config contains at least the following routing profiles:
 
