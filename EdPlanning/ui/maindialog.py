@@ -7,12 +7,13 @@ from PyQt5.QtWidgets import (
     QRadioButton,
     QWidget,
 )
+from qgis.core import QgsApplication
 
-from ..core.isochrone_creator import IsochroneOpts
+from ..core.isochrone_creator import IsochroneCreator, IsochroneOpts
 from ..definitions.constants import Profile, Unit
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.resources import load_ui, plugin_name
-from ..qgis_plugin_tools.tools.settings import get_setting
+from ..qgis_plugin_tools.tools.settings import get_setting, set_setting
 from .about_panel import AboutPanel
 from .catchment_area_panel import CatchmentAreaPanel
 from .settings_panel import SettingsPanel
@@ -96,3 +97,13 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             if radio_button.isChecked():
                 return radio_button.objectName()
         raise Exception("No checked radio buttons found")  # TODO: exception
+
+    def accept(self) -> None:
+        # override default accept to prevent closing dialog, just run task instead
+        opts = self.read_isochrone_options()
+        if opts.check_if_opts_set():
+            set_setting("gh_url", opts.url)
+            set_setting("result_dir", opts.directory)
+            set_setting("api_key", opts.api_key)
+            self.creator = IsochroneCreator(opts)
+            QgsApplication.taskManager().addTask(self.creator)

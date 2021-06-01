@@ -3,7 +3,6 @@ from typing import Callable, List, Optional
 from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QWidget
-from qgis.core import QgsApplication
 from qgis.gui import QgisInterface
 
 from .core.isochrone_creator import IsochroneCreator
@@ -138,12 +137,3 @@ class Plugin:
     def run(self) -> None:
         """Run method that performs all the real work"""
         self.dlg.show()
-
-        if self.dlg.exec_():
-            opts = self.dlg.read_isochrone_options()
-            # no type checking needed, since we check if options are set before run
-            if opts.check_if_opts_set():
-                set_setting("gh_url", opts.url)
-                set_setting("result_dir", opts.directory)
-                self.creator = IsochroneCreator(opts)
-                QgsApplication.taskManager().addTask(self.creator)
