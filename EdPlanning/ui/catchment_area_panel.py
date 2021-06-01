@@ -128,7 +128,9 @@ class CatchmentAreaPanel(BasePanel):
             duration = self._get_duration()
             if duration is not None:
                 self.dlg.duration_label.setText(
-                    f"Estimated processing time: {duration} mins"
+                    f"Approximate processing time: {duration} mins\nThe amount of "
+                    "road data in your area and your internet connection speed\n"
+                    "will affect the total processing time."
                 )
             else:
                 self.dlg.duration_label.setText("")
