@@ -7,7 +7,15 @@ import os
 from typing import Callable, Dict, Optional
 
 import pytest
-from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer
+from PyQt5.QtCore import QVariant
+from qgis.core import (
+    QgsFeature,
+    QgsField,
+    QgsFields,
+    QgsGeometry,
+    QgsPointXY,
+    QgsVectorLayer,
+)
 
 from EdPlanning.core.isochrone_creator import IsochroneOpts
 from EdPlanning.definitions.constants import Profile, Unit
@@ -55,16 +63,28 @@ def point() -> None:
 
 
 @pytest.fixture(scope="function")
-def point_feature(point) -> None:
-    feature = QgsFeature()
+def fields() -> None:
+    fields = QgsFields()
+    fields.append(QgsField("id", QVariant.Int))
+    fields.append(QgsField("name", QVariant.String))
+    yield fields
+
+
+@pytest.fixture(scope="function")
+def point_feature(fields, point) -> None:
+    feature = QgsFeature(fields)
     feature.setGeometry(QgsGeometry.fromPointXY(point))
+    feature.setAttribute("id", 1)
+    feature.setAttribute("name", "school")
     yield feature
 
 
 @pytest.fixture(scope="function")
-def vector_layer(point_feature) -> None:
+def vector_layer(fields, point_feature) -> None:
     layer = QgsVectorLayer("Point?crs=epsg:4326&index=yes", "test_points", "memory")
     provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
     provider.addFeature(point_feature)
     layer.updateExtents()
     yield layer

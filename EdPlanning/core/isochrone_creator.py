@@ -9,6 +9,7 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
     QgsFeature,
+    QgsFields,
     QgsGeometry,
     QgsLayerTreeLayer,
     QgsPointXY,
@@ -162,7 +163,8 @@ class IsochroneCreator(QgsTask):
         for idx, point in enumerate(self.points):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
-                feature = QgsFeature()
+                feature = QgsFeature(layer.fields())
+                feature.setAttributes(point.attributes())
                 feature.setGeometry(
                     QgsGeometry.fromPolygonXY(
                         [
@@ -197,6 +199,13 @@ class IsochroneCreator(QgsTask):
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )
+
+        # add all the required fields to the new layer
+        fields = QgsFields(self.opts.layer.fields())  # type: ignore
+        provider = isochrone_layer.dataProvider()
+        provider.addAttributes(fields)
+        isochrone_layer.updateFields()
+
         self.__add_isochrones_to_layer(isochrone_layer)
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
