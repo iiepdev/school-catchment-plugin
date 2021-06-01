@@ -69,8 +69,9 @@ class CatchmentAreaPanel(BasePanel):
                 minutes_per_thousand_points = 10 * pow(
                     2, distance_in_minutes_by_foot / 100 - 6
                 )
-                # Network calls ~ 1 minute for 1000 pts.
-                total = float(count / 1000) * float(minutes_per_thousand_points + 1)
+                # Network calls ~ 5 minutes for 1000 pts
+                # (on a slow network with large polygons)
+                total = float(count / 200) * float(minutes_per_thousand_points + 1)
                 if total > 120:
                     raise TooHeavyOperationException()
                 return floor(total)
