@@ -193,7 +193,7 @@ class IsochroneCreator(QgsTask):
             f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
         )
         direction = "to" if self.params["reverse_flow"] else "from"
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} school{profile}"  # type: ignore  # noqa
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} {self.opts.layer.name()}{profile}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )
