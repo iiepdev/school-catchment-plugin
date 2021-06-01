@@ -32,6 +32,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         super().__init__()
         self.setupUi(self)
         self.buttonbox_main.button(QDialogButtonBox.Ok).setText("Run")
+        self.buttonbox_main.button(QDialogButtonBox.Cancel).setText("Close")
         self.lineedit_url.setText(get_setting("gh_url"))
         self.file_widget.setFilePath(get_setting("result_dir"))
         # only check write to file if path was found
