@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>main_dialog</class>
  <widget class="QDialog" name="main_dialog">
+  <property name="windowFlags">
+   <set>Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowMinMaxButtonsHint|Qt::WindowCloseButtonHint</set>
+  </property>
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
