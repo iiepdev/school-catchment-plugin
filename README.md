@@ -10,7 +10,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-QGIS plugin for analysing school accessibility based on OpenStreetMap data.
+QGIS plugin for analysing school accessibility based on OpenStreetMap route data.
 
 ![Isochrones in QGIS](imgs/screenshot_ui.PNG)
 
@@ -31,6 +31,25 @@ The plugin employs the [Graphhopper routing backend](https://github.com/graphhop
 ```
 
 See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopper-docker) for simple instructions on how to set up GraphHopper using Docker. The setup and config stored in that repository works directly with the tool.
+
+### How to get started
+
+![Settings panel](imgs/settings.png)
+
+1. Once you know your Graphhopper address, start the plugin and select the Settings tab. Fill in the address in Graphhopper URL field.
+2. If your Graphhopper subscription requires an API key, fill in the API key field.
+3. If you wish to save the result layers automatically, select the checkbox and pick the directory you want to save the results in. Otherwise, the layer stays only in memory.
+
+![Catchment area panel](imgs/settings.png)
+
+4. Select any point layer currently open in your QGIS project.
+5. If you have filtered or selected points in the layer, you may only use selected points. Otherwise, all points will be used in the calculation.
+6. Select the distance you want to travel in minutes or meters.
+7. Select the mode of transit. Walking is the default and uses all Openstreetmap paths.
+8. Calculation time estimate is shown based on the currently selected settings. It will warn you if the run is going to take too long.
+9. Press Run to start calculating.
+
+You may continue working in QGIS while the isochrones are fetched in the background. The QGIS progress bar (bottom of QGIS screen) will display the process. You may cancel the calculation there. You may also start multiple calculations with different settings at the same time by pressing Run again.
 
 ### Development
 
