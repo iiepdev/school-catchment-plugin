@@ -36,6 +36,9 @@ class CatchmentAreaPanel(BasePanel):
         self.dlg.combobox_layer.layerChanged.connect(
             self.on_combobox_layer_layerChanged
         )
+        self.dlg.checkbox_selected_only.clicked.connect(
+            self.on_checkbox_selected_only_clicked
+        )
         self.dlg.spinbox_distance.valueChanged.connect(
             self.on_spinbox_distance_valueChanged
         )
@@ -50,7 +53,11 @@ class CatchmentAreaPanel(BasePanel):
         """
         opts = self.dlg.read_isochrone_options()
         if opts.check_if_opts_set():
-            count = opts.layer.featureCount()  # type: ignore
+            count = (
+                opts.layer.selectedFeatureCount()  # type: ignore
+                if opts.selected_only
+                else opts.layer.featureCount()  # type: ignore
+            )
             distance_in_minutes_by_foot: int = opts.distance  # type: ignore
             if opts.unit == Unit.METERS:
                 # assuming walking speed 5 km/h = 83.3 m/min
@@ -95,6 +102,9 @@ class CatchmentAreaPanel(BasePanel):
         self.__update_duration_label()
 
     def on_combobox_layer_layerChanged(self) -> None:  # noqa
+        self.__update_duration_label()
+
+    def on_checkbox_selected_only_clicked(self) -> None:
         self.__update_duration_label()
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa

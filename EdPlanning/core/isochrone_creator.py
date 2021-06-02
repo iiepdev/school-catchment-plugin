@@ -36,6 +36,7 @@ class IsochroneOpts:
     url: str = ""
     api_key: str = ""
     layer: Optional[QgsVectorLayer] = None
+    selected_only: bool = False
     distance: Optional[int] = None
     unit: Optional[Unit] = None
     profile: Optional[Profile] = None
@@ -84,6 +85,9 @@ class IsochroneCreator(QgsTask):
             layer: QgsVectorLayer = self.opts.layer
             wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
             if layer.crs() != wgs84:
+                selected_ids = [
+                    feature.attribute("fid") for feature in layer.getSelectedFeatures()
+                ]
                 LOGGER.info(
                     f"Layer in {layer.crs().authid()}, reprojecting to WGS 84 first."
                 )
@@ -95,9 +99,16 @@ class IsochroneCreator(QgsTask):
                 layer = qgis.processing.run("native:reprojectlayer", alg_params)[
                     "OUTPUT"
                 ]
+                layer.select(selected_ids)
             # QgsVectorLayer from main thread may not be used in other threads?
             # How about the QgsFeatures we list here, seems to work fine?
-            self.points = list(layer.getFeatures())
+            self.points = (
+                list(layer.getSelectedFeatures())
+                if self.opts.selected_only
+                else list(layer.getFeatures())
+            )
+        super().__init__(description="Fetching GraphHopper isochrones for all points")
+        self.setProgress(0.0)
 
     def run(self) -> bool:
         """
@@ -195,7 +206,8 @@ class IsochroneCreator(QgsTask):
             f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
         )
         direction = "to" if self.params["reverse_flow"] else "from"
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} {self.opts.layer.name()}{profile}"  # type: ignore  # noqa
+        selected = "selected " if self.opts.selected_only else ""
+        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} {selected}{self.opts.layer.name()}{profile}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
             "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
         )

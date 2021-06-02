@@ -67,6 +67,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts.write_to_directory = self.checkbox_file.isChecked()
         opts.directory = self.file_widget.filePath()
         opts.layer = self.combobox_layer.currentLayer()
+        opts.selected_only = self.checkbox_selected_only.isChecked()
         opts.distance = self.spinbox_distance.value()
 
         unit = self.__get_radiobtn_name(self.groupbox_units)
