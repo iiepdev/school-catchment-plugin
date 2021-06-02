@@ -40,7 +40,7 @@ See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopp
 2. If your Graphhopper subscription requires an API key, fill in the API key field.
 3. If you wish to save the result layers automatically, select the checkbox and pick the directory you want to save the results in. Otherwise, the layer stays only in memory.
 
-![Catchment area panel](imgs/settings.png)
+![Catchment area panel](imgs/run.png)
 
 4. Select any point layer currently open in your QGIS project.
 5. If you have filtered or selected points in the layer, you may only use selected points. Otherwise, all points will be used in the calculation.
