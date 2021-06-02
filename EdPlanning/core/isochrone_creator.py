@@ -53,11 +53,9 @@ class IsochroneOpts:
 
 class IsochroneCreator(QgsTask):
     def __init__(self, opts: IsochroneOpts) -> None:
-        super().__init__(description="Fetching GraphHopper isochrones for all points")
         self.opts = opts
         self.result_layer: Optional[QgsVectorLayer] = None
         self.points = []
-        self.setProgress(0.0)
         # no type checking needed, since we check if options are set
         if self.opts.check_if_opts_set():
             self.base_url = self.opts.url
@@ -107,7 +105,14 @@ class IsochroneCreator(QgsTask):
                 if self.opts.selected_only
                 else list(layer.getFeatures())
             )
-        super().__init__(description="Fetching GraphHopper isochrones for all points")
+        profile_string = (
+            f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
+        )
+        direction_string = "to" if self.params["reverse_flow"] else "from"
+        selected_string = "selected " if self.opts.selected_only else ""
+        self.name = f"{self.opts.distance} {self.opts.unit.value} {direction_string} {selected_string}{self.opts.layer.name()}{profile_string}"  # type: ignore  # noqa
+
+        super().__init__(description=f"Fetching GraphHopper isochrones: {self.name}")
         self.setProgress(0.0)
 
     def run(self) -> bool:
@@ -202,14 +207,8 @@ class IsochroneCreator(QgsTask):
 
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
-        profile = (
-            f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
-        )
-        direction = "to" if self.params["reverse_flow"] else "from"
-        selected = "selected " if self.opts.selected_only else ""
-        layer_name = f"{self.opts.distance} {self.opts.unit.value} {direction} {selected}{self.opts.layer.name()}{profile}"  # type: ignore  # noqa
         isochrone_layer = QgsVectorLayer(
-            "Polygon?crs=epsg:4326&index=yes", layer_name, "memory"
+            "Polygon?crs=epsg:4326&index=yes", self.name, "memory"
         )
 
         # add all the required fields to the new layer
@@ -225,7 +224,7 @@ class IsochroneCreator(QgsTask):
         # in case a directory was specified, save the layer to geopackage
         geopackage_file = None
         if self.opts.write_to_directory and self.opts.directory:
-            geopackage_file = os.path.join(self.opts.directory, f"{layer_name}.gpkg")
+            geopackage_file = os.path.join(self.opts.directory, f"{self.name}.gpkg")
             save_options = QgsVectorFileWriter.SaveVectorOptions()
             error = QgsVectorFileWriter.writeAsVectorFormatV2(
                 isochrone_layer,
@@ -238,7 +237,7 @@ class IsochroneCreator(QgsTask):
             else:
                 # in case the layer was saved, return the saved layer instead
                 LOGGER.info(f"Saved to file {geopackage_file}")
-                isochrone_layer = QgsVectorLayer(geopackage_file, layer_name, "ogr")
+                isochrone_layer = QgsVectorLayer(geopackage_file, self.name, "ogr")
 
         isochrone_layer.renderer().symbol().setOpacity(0.25)
         return isochrone_layer
