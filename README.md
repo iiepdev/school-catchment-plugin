@@ -30,7 +30,7 @@ The plugin employs the [Graphhopper routing backend](https://github.com/graphhop
       weighting: fastest
 ```
 
-See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopper-docker) for simple instructions on how to set up GraphHopper using Docker. The setup and config stored in that repository works directly with the tool 
+See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopper-docker) for simple instructions on how to set up GraphHopper using Docker. The setup and config stored in that repository works directly with the tool.
 
 ### Development
 
