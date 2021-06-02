@@ -49,7 +49,7 @@ See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopp
 8. Calculation time estimate is shown based on the currently selected settings. It will warn you if the run is going to take too long.
 9. Press Run to start calculating.
 
-You may continue working in QGIS while the isochrones are fetched in the background. The QGIS progress bar (bottom of QGIS screen) will display the process. You may cancel the calculation there. You may also start multiple calculations with different settings at the same time by pressing Run again.
+You may continue working in QGIS while the isochrones are fetched in the background, and you may close the dialog. The QGIS progress bar (bottom of QGIS screen) will display the process. You may cancel the calculation there. You may also start multiple calculations with different settings at the same time by pressing Run again.
 
 ### Development
 
