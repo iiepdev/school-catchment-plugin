@@ -61,7 +61,7 @@ jobs:
         run: |
           $env:PATH="C:\Program Files\QGIS 3.16\bin;$env:PATH"
           $env:QGIS_PLUGIN_IN_CI=1
-          python-qgis-ltr.bat -m pip install -q pytest pytest-mock 'pytest-qt<4'
+          python-qgis-ltr.bat -m pip install -q pytest pytest-mock "pytest-qt<4"
           python-qgis-ltr.bat -m pytest -v
 
   pre-release:
