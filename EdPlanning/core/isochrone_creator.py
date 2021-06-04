@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import qgis.processing
+from PyQt5.QtNetwork import QNetworkReply
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
@@ -27,8 +28,8 @@ from ..qgis_plugin_tools.tools.resources import plugin_name
 
 # from qgis.PyQt.QtCore import QCoreApplication
 
-
-LOGGER = logging.getLogger(f"{plugin_name()}_task")
+MAIN_LOGGER = logging.getLogger(plugin_name())
+TASK_LOGGER = logging.getLogger(f"{plugin_name()}_task")
 
 
 @dataclass
@@ -86,7 +87,7 @@ class IsochroneCreator(QgsTask):
                 selected_ids = [
                     feature.attribute("fid") for feature in layer.getSelectedFeatures()
                 ]
-                LOGGER.info(
+                MAIN_LOGGER.info(
                     f"Layer in {layer.crs().authid()}, reprojecting to WGS 84 first."
                 )
                 alg_params = {
@@ -125,10 +126,16 @@ class IsochroneCreator(QgsTask):
         Any resulting QObjects must be manually moved to the main thread
         when finished with them.
         """
-        self.result_layer = self.create_isochrone_layer()
+        try:
+            self.result_layer = self.create_isochrone_layer()
+        except QgsPluginNetworkException as e:
+            TASK_LOGGER.error(
+                f"Network request failed, aborting run. Error: {e.message}"  # noqa
+            )
+            return False
         count = self.result_layer.featureCount()
-        LOGGER.info(f"Total of {count} isochrones generated.")
-        LOGGER.info(
+        TASK_LOGGER.info(f"Total of {count} isochrones generated.")
+        TASK_LOGGER.info(
             f"Isochrones could not be generated for {len(self.points)-count} points."
         )
         # don't know if this is really needed or done automatically?
@@ -145,14 +152,32 @@ class IsochroneCreator(QgsTask):
         to do GUI operations and raise Python exceptions here.
         result is the return value from self.run.
         """
-        if result and self.result_layer:
+        if not result:
+            if not self.result_layer:
+                MAIN_LOGGER.error(
+                    "Graphhopper request failed",
+                    extra={
+                        "details": "Please check your Graphhopper url and your Internet connection."  # noqa
+                    },
+                )
+            elif len(self.points):
+                MAIN_LOGGER.error(
+                    "No results, no roads found close to any of the points",
+                    extra={
+                        "details": "Please make sure that Graphhopper contains the roads in your region."  # noqa
+                    },
+                )
+            else:
+                MAIN_LOGGER.error(
+                    "Starting layer was empty, no isochrones generated",
+                    extra={
+                        "details": "Please check that your starting layer contains at least one point."  # noqa
+                    },
+                )
+        else:
             QgsProject.instance().addMapLayer(self.result_layer, False)
             root = QgsProject.instance().layerTreeRoot()
             root.insertChildNode(1, QgsLayerTreeLayer(self.result_layer))
-        elif not len(self.points):
-            LOGGER.warning("Point layer empty, no isochrones generated")
-        else:
-            LOGGER.warning("No isochrones returned for any of the points")
 
     def __fetch_bucketed_isochrones(self, point: QgsFeature) -> List[Dict]:
         # the API may return multiple isochrones for a single point (buckets)
@@ -165,17 +190,29 @@ class IsochroneCreator(QgsTask):
             try:
                 isochrone_json = fetch(self.base_url, params=isochrone_params)
             except QgsPluginNetworkException as e:
-                LOGGER.warning(
-                    f"Request failed for point {point.y()},{point.x()}: {e}. "
-                    "Most likely isochrone could not be calculated because no roads "
-                    "were found close to the point."
-                )
-                return []
+                # In case we have a bad request, it is usually due to missing roads.
+                # Inform the user and continue.
+                if e.error == QNetworkReply.ProtocolInvalidOperationError:
+                    error_message = e.message  # noqa
+                    try:
+                        # Graphhopper will return json error message. However,
+                        # error content will be empty in older QGIS versions:
+                        # https://github.com/qgis/QGIS/issues/42442
+                        # In this case, the error message will be the default string.
+                        error_message = json.loads(error_message)["message"]
+                    except json.decoder.JSONDecodeError:
+                        pass
+                    TASK_LOGGER.warning(
+                        f"Request failed for point {point.y()},{point.x()}: {error_message}. "  # noqa
+                    )
+                    return []
+                # All other network exceptions should be raised
+                raise e
             isochrones.extend(json.loads(isochrone_json)["polygons"])
         return isochrones
 
     def __add_isochrones_to_layer(self, layer: QgsVectorLayer) -> None:
-        LOGGER.info("Starting isochrone fetch...")
+        TASK_LOGGER.info("Starting isochrone fetch...")
         for idx, point in enumerate(self.points):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
@@ -195,11 +232,11 @@ class IsochroneCreator(QgsTask):
                 )
                 layer.dataProvider().addFeature(feature)
             if idx and idx % 10 == 0:
-                LOGGER.info(
+                TASK_LOGGER.info(
                     f"{idx} out of {len(self.points)} objects fetched"  # type: ignore  # noqa
                 )
             if self.isCanceled():
-                LOGGER.warning(
+                TASK_LOGGER.warning(
                     f"Task cancelled, only {idx} out of {len(self.points)} isochrones calculated"  # type: ignore  # noqa
                 )
                 break
@@ -223,7 +260,11 @@ class IsochroneCreator(QgsTask):
 
         # in case a directory was specified, save the layer to geopackage
         geopackage_file = None
-        if self.opts.write_to_directory and self.opts.directory:
+        if (
+            isochrone_layer.featureCount()
+            and self.opts.write_to_directory
+            and self.opts.directory
+        ):
             geopackage_file = os.path.join(self.opts.directory, f"{self.name}.gpkg")
             save_options = QgsVectorFileWriter.SaveVectorOptions()
             error = QgsVectorFileWriter.writeAsVectorFormatV2(
@@ -233,10 +274,10 @@ class IsochroneCreator(QgsTask):
                 save_options,
             )
             if error[0]:
-                LOGGER.warning(f"Could not save file: {error[0]}")
+                TASK_LOGGER.warning(f"Could not save file: {error[0]}")
             else:
                 # in case the layer was saved, return the saved layer instead
-                LOGGER.info(f"Saved to file {geopackage_file}")
+                TASK_LOGGER.info(f"Saved to file {geopackage_file}")
                 isochrone_layer = QgsVectorLayer(geopackage_file, self.name, "ogr")
 
         isochrone_layer.renderer().symbol().setOpacity(0.25)

@@ -8,6 +8,7 @@ from typing import Callable, Dict, Optional
 
 import pytest
 from PyQt5.QtCore import QVariant
+from PyQt5.QtNetwork import QNetworkReply
 from qgis.core import (
     QgsFeature,
     QgsField,
@@ -31,24 +32,35 @@ MOCK_URL = "http://mock.url"
 
 @pytest.fixture(autouse=True)
 def new_project() -> None:
-    """Initializes new QGIS project by removing layers and relations etc."""  # noqa E501
+    """Initializes the QGIS project by removing layers and relations etc."""  # noqa E501
+    # yields nothing
     yield IFACE.newProject()
 
 
 @pytest.fixture(scope="function")
 def mock_fetch(mocker, request) -> None:
     """Makes fetch return JSON for a specified URL, exception otherwise.
-    Use by calling mock_fetch(desired_url) in a test.
+    Use by calling mock_fetch(desired_url, json_file_name, error_desired) in a test.
     """
 
-    def _mock_fetch(url: str) -> Callable:
+    def _mock_fetch(
+        url: str,
+        json_to_return: str = "isochrones.json",
+        error: bool = False,
+    ) -> Callable:
         def mocked_fetch(
-            incoming_url: str, params: Optional[Dict[str, str]] = None
+            incoming_url: str,
+            params: Optional[Dict[str, str]] = None,
         ) -> str:
             if incoming_url == url:
                 with open(
-                    os.path.join(request.fspath.dirname, "fixtures", "isochrones.json")
+                    os.path.join(request.fspath.dirname, "fixtures", json_to_return)
                 ) as f:
+                    # mock error if desired
+                    if error:
+                        raise QgsPluginNetworkException(
+                            f.read(), error=QNetworkReply.ProtocolInvalidOperationError
+                        )
                     return f.read()
             raise QgsPluginNetworkException(tr("Request failed"))
 

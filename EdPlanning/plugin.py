@@ -27,7 +27,7 @@ class Plugin:
         self.creator: Optional[IsochroneCreator] = None
 
         # conventional logger for the main thread
-        setup_logger(plugin_name())
+        setup_logger(plugin_name(), iface)
         # separate task logger that only logs to QGIS UI
         setup_task_logger(plugin_name())
 
@@ -133,6 +133,7 @@ class Plugin:
             self.iface.removePluginMenu(tr(plugin_name()), action)
             self.iface.removeToolBarIcon(action)
         teardown_logger(plugin_name())
+        teardown_logger(f"{plugin_name()}_task")
 
     def run(self) -> None:
         """Run method that performs all the real work"""

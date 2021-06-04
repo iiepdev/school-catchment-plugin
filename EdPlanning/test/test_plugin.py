@@ -26,3 +26,19 @@ def test_plugin(new_plugin, mock_fetch, qtbot):
     for layer in QgsProject.instance().mapLayers().values():
         assert layer.geometryType() == QgsWkbTypes.PolygonGeometry
         assert layer.featureCount() == 1
+
+
+def test_plugin_fail(new_plugin, mock_fetch, qtbot):
+    mock_fetch(MOCK_URL + "/isochrone", "error.json", error=True)
+    new_plugin.run()
+    dialog = new_plugin.dlg
+    buttonbox = dialog.buttonbox_main
+    for button in buttonbox.buttons():
+        if buttonbox.buttonRole(button) == QDialogButtonBox.AcceptRole:
+            qtbot.mouseClick(button, Qt.LeftButton)
+    action = QGIS_APP.taskManager().activeTasks()[0]
+    # check that the task is *not* completed
+    blocker = qtbot.waitSignal(action.taskTerminated, timeout=10000)
+    blocker.wait()
+    # check that empty layer is not added
+    assert QgsProject.instance().count() == 0
