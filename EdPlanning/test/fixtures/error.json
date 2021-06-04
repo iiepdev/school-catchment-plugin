@@ -1,0 +1,9 @@
+{
+    "message": "Point not found:17.321822999731694,96.3332520001797",
+    "hints": [
+        {
+            "message": "Point not found:17.321822999731694,96.3332520001797",
+            "details": "java.lang.IllegalArgumentException"
+        }
+    ]
+}
