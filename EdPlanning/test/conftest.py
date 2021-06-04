@@ -8,7 +8,8 @@ from typing import Callable, Dict, Optional
 
 import pytest
 from PyQt5.QtCore import QVariant
-from PyQt5.QtNetwork import QNetworkReply
+
+# from PyQt5.QtNetwork import QNetworkReply
 from qgis.core import (
     QgsFeature,
     QgsField,
@@ -58,9 +59,7 @@ def mock_fetch(mocker, request) -> None:
                 ) as f:
                     # mock error if desired
                     if error:
-                        raise QgsPluginNetworkException(
-                            f.read(), error=QNetworkReply.ProtocolInvalidOperationError
-                        )
+                        raise QgsPluginNetworkException(f.read(), error=302)
                     return f.read()
             raise QgsPluginNetworkException(tr("Request failed"))
 
