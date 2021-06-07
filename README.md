@@ -44,7 +44,7 @@ See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopp
 
 4. Select any point layer currently open in your QGIS project.
 5. If you have filtered or selected points in the layer, you may only use selected points. Otherwise, all points will be used in the calculation.
-6. Select the distance you want to travel in minutes or meters.
+6. Select the distance you want to travel in minutes or meters. You may calculate multiple isochrones per point ("buckets") at the same time by setting the number of distance divisions. They will be exact divisions of the total distance, and each distance will be saved in the `distance` field of the resulting isochrones. Calculating multiple isochrones per point will increase the processing time.
 7. Select the mode of transit. Walking is the default and uses all Openstreetmap paths.
 8. Calculation time estimate is shown based on the currently selected settings. It will warn you if the run is going to take too long.
 9. Press Run to start calculating.
