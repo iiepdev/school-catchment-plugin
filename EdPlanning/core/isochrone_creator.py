@@ -5,11 +5,13 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import qgis.processing
+from PyQt5.QtCore import QVariant
 from PyQt5.QtNetwork import QNetworkReply
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
     QgsFeature,
+    QgsField,
     QgsFields,
     QgsGeometry,
     QgsLayerTreeLayer,
@@ -40,6 +42,7 @@ class IsochroneOpts:
     selected_only: bool = False
     distance: Optional[int] = None
     unit: Optional[Unit] = None
+    buckets: int = 1
     profile: Optional[Profile] = None
     write_to_directory: bool = False
     directory: str = ""
@@ -69,7 +72,7 @@ class IsochroneCreator(QgsTask):
             self.base_url += "isochrone"
             self.params = {
                 "profile": self.opts.profile.value,  # type: ignore
-                "buckets": 1,
+                "buckets": self.opts.buckets,
                 "reverse_flow": True,
             }
             if self.opts.api_key:
@@ -136,7 +139,7 @@ class IsochroneCreator(QgsTask):
         count = self.result_layer.featureCount()
         TASK_LOGGER.info(f"Total of {count} isochrones generated.")
         TASK_LOGGER.info(
-            f"Isochrones could not be generated for {len(self.points)-count} points."
+            f"{self.opts.buckets*len(self.points)-count} isochrones could not be generated."  # noqa
         )
         # don't know if this is really needed or done automatically?
         # finished will run in the main thread anyway
@@ -217,7 +220,17 @@ class IsochroneCreator(QgsTask):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
                 feature = QgsFeature(layer.fields())
-                feature.setAttributes(point.attributes())
+                # save the original feature id separately
+                # setAttributes cannot be used, will destroy any extra fields!!
+                for index, attribute in enumerate(point.attributes()):
+                    feature.setAttribute(index, attribute)
+                # set the added distance field separately
+                bucket = polygon_in_bucket["properties"]["bucket"]
+                distance = (bucket + 1) * (
+                    self.opts.distance / self.opts.buckets  # type: ignore
+                )
+                feature.setAttribute("isochrone_distance", distance)
+
                 feature.setGeometry(
                     QgsGeometry.fromPolygonXY(
                         [
@@ -250,6 +263,12 @@ class IsochroneCreator(QgsTask):
 
         # add all the required fields to the new layer
         fields = QgsFields(self.opts.layer.fields())  # type: ignore
+        # save original feature id separate from new feature id
+        fields.rename(0, "original_fid")
+        distance_field = QgsField(
+            name="isochrone_distance", type=QVariant.Double, typeName="double"
+        )
+        fields.append(distance_field)
         provider = isochrone_layer.dataProvider()
         provider.addAttributes(fields)
         isochrone_layer.updateFields()
@@ -274,7 +293,9 @@ class IsochroneCreator(QgsTask):
                 save_options,
             )
             if error[0]:
-                TASK_LOGGER.warning(f"Could not save file: {error[0]}")
+                TASK_LOGGER.error(
+                    f"Could not save file: {error}",
+                )
             else:
                 # in case the layer was saved, return the saved layer instead
                 TASK_LOGGER.info(f"Saved to file {geopackage_file}")

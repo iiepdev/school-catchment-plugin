@@ -69,6 +69,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts.layer = self.combobox_layer.currentLayer()
         opts.selected_only = self.checkbox_selected_only.isChecked()
         opts.distance = self.spinbox_distance.value()
+        opts.buckets = self.spinbox_buckets.value()
 
         unit = self.__get_radiobtn_name(self.groupbox_units)
         if unit == "radiobtn_mins":

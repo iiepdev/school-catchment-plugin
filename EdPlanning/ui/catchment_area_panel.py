@@ -42,6 +42,9 @@ class CatchmentAreaPanel(BasePanel):
         self.dlg.spinbox_distance.valueChanged.connect(
             self.on_spinbox_distance_valueChanged
         )
+        self.dlg.spinbox_buckets.valueChanged.connect(
+            self.on_spinbox_buckets_valueChanged
+        )
 
     def _get_duration(self) -> Optional[int]:
         """
@@ -53,7 +56,8 @@ class CatchmentAreaPanel(BasePanel):
         """
         opts = self.dlg.read_isochrone_options()
         if opts.check_if_opts_set():
-            count = (
+            buckets = opts.buckets
+            count = buckets * (
                 opts.layer.selectedFeatureCount()  # type: ignore
                 if opts.selected_only
                 else opts.layer.featureCount()  # type: ignore
@@ -108,6 +112,9 @@ class CatchmentAreaPanel(BasePanel):
         self.__update_duration_label()
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
+        self.__update_duration_label()
+
+    def on_spinbox_buckets_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()
 
     def __update_unit_selector(self, selected_unit: Unit) -> None:

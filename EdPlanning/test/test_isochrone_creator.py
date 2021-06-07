@@ -14,8 +14,9 @@ def test_isochrone_layer_isochrone_created(isochrone_opts, mock_fetch):
     assert isochrone_layer.featureCount() == 1
     assert isochrone_layer.geometryType() == QgsWkbTypes.PolygonGeometry
     for feature in isochrone_layer.getFeatures():
-        assert feature.attribute("id") == 1
+        assert feature.attribute("original_fid") == 1
         assert feature.attribute("name") == "school"
+        assert feature.attribute("isochrone_distance") == 30
 
 
 def test_isochrone_layer_empty(isochrone_opts, mock_fetch):
