@@ -301,5 +301,5 @@ class IsochroneCreator(QgsTask):
                 TASK_LOGGER.info(f"Saved to file {geopackage_file}")
                 isochrone_layer = QgsVectorLayer(geopackage_file, self.name, "ogr")
 
-        isochrone_layer.renderer().symbol().setOpacity(0.25)
+        isochrone_layer.renderer().symbol().setOpacity(0.15)
         return isochrone_layer
