@@ -17,7 +17,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>EdPlanning</string>
+   <string>Catchment</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="leftMargin">
@@ -498,14 +498,14 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_gsource">
                    <property name="text">
-                    <string>Edplanning Plugin repository</string>
+                    <string>Catchment Plugin repository</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
                   <widget class="QLabel" name="label_source">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/edplanning&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/edplanning&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/catchment-plugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/catchment-plugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
                    </property>
                   </widget>
@@ -533,7 +533,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_version_txt">
                    <property name="text">
-                    <string>Edplanning Plugin</string>
+                    <string>Catchment Plugin</string>
                    </property>
                   </widget>
                  </item>
@@ -568,7 +568,7 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_plugin">
                    <property name="text">
-                    <string>Edplanning Plugin</string>
+                    <string>Catchment Plugin</string>
                    </property>
                   </widget>
                  </item>

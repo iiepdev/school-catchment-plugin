@@ -84,6 +84,7 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             opts.profile = Profile.CYCLING
         elif profile == "radiobtn_driving":
             opts.profile = Profile.DRIVING
+        print(opts)
         return opts
 
     def _set_window_location(self) -> None:

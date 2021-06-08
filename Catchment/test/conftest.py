@@ -19,9 +19,9 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from EdPlanning.core.isochrone_creator import IsochroneOpts
-from EdPlanning.definitions.constants import Profile, Unit
-from EdPlanning.plugin import Plugin
+from Catchment.core.isochrone_creator import IsochroneOpts
+from Catchment.definitions.constants import Profile, Unit
+from Catchment.plugin import Plugin
 
 from ..qgis_plugin_tools.testing.utilities import get_qgis_app
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
@@ -63,7 +63,7 @@ def mock_fetch(mocker, request) -> None:
                     return f.read()
             raise QgsPluginNetworkException(tr("Request failed"))
 
-        mocker.patch("EdPlanning.core.isochrone_creator.fetch", new=mocked_fetch)
+        mocker.patch("Catchment.core.isochrone_creator.fetch", new=mocked_fetch)
 
     yield _mock_fetch
 

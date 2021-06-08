@@ -1,0 +1,16 @@
+[general]
+name=Catchment
+description=
+about=
+version=0.0.1
+qgisMinimumVersion=3.10
+author=
+email=
+changelog=
+tags=
+repository=https://github.com/GispoCoding/catchment-plugin
+homepage=https://github.com/GispoCoding/catchment-plugin
+tracker=https://github.com/GispoCoding/catchment-plugin/issues
+category=Plugins
+experimental=True
+deprecated=False

@@ -1,7 +1,7 @@
 import pytest
 from qgis.core import QgsWkbTypes
 
-from EdPlanning.core.isochrone_creator import IsochroneCreator
+from Catchment.core.isochrone_creator import IsochroneCreator
 
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
 

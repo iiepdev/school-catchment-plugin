@@ -1,21 +1,21 @@
-Development of EdPlanning plugin
+Development of QGIS Catchment plugin
 ===========================
 
 This project uses [qgis_plugin_tools](https://github.com/GispoCoding/qgis_plugin_tools) submodule, so when cloning
 use `--recurse-submodules` like so:
-`git clone --recurse-submodules https://github.com/GispoCoding/edplanning.git`
+`git clone --recurse-submodules https://github.com/GispoCoding/catchment-plugin.git`
 
-The code for the plugin is in the [EdPlanning](../EdPlanning) folder. Make sure you have required tools, such as
+The code for the plugin is in the [Catchment](../Catchment) folder. Make sure you have required tools, such as
 Qt with Qt Editor and Qt Linquist installed by following this
 [tutorial](https://www.qgistutorials.com/en/docs/3/building_a_python_plugin.html#get-the-tools).
 
-For building the plugin use platform independent [build.py](../EdPlanning/build.py) script.
+For building the plugin use platform independent [build.py](../Catchment/build.py) script.
 
 ## Setting up development environment
 
 To get started with the development, follow these steps:
 
-1. Go to the  [EdPlanning](../EdPlanning) directory with a terminal
+1. Go to the  [Catchment](../Catchment) directory with a terminal
 1. Create a new Python virtual environment with pre-commit using Python aware of QGIS libraries:
    ```shell
     python build.py venv
@@ -53,14 +53,14 @@ If you create or edit source files make sure that:
 
     from ..utils.exceptions import TestException # Good
 
-    from EdPlanning.utils.exceptions import TestException # Bad
+    from Catchment.utils.exceptions import TestException # Bad
     ```
-* they will be found by [build.py](../EdPlanning/build.py) script (`py_files` and `ui_files` values)
+* they will be found by [build.py](../Catchment/build.py) script (`py_files` and `ui_files` values)
 * you consider adding test files for the new functionality
 
 ## Deployment
 
-Edit [build.py](../EdPlanning/build.py) to contain working values for *profile*, *lrelease* and *pyrcc*. If you are
+Edit [build.py](../Catchment/build.py) to contain working values for *profile*, *lrelease* and *pyrcc*. If you are
 running on Windows, make sure the value *QGIS_INSTALLATION_DIR* points to right folder
 
 Run the deployment with:
@@ -105,7 +105,7 @@ For step-by-step instructions, read the [translation tutorial](./translation_tut
 * Go to your Transifex site, add some languages and start translating
 * Copy [push_translations.yml](push_translations.yml) file to [workflows](../.github/workflows) folder to enable
   automatic pushing after commits to master
-* Add this badge ![](https://github.com/GispoCoding/edplanning/workflows/Translations/badge.svg) to
+* Add this badge ![](https://github.com/GispoCoding/catchment-plugin/workflows/Translations/badge.svg) to
   the [README](../README.md)
 
 ##### Pulling
@@ -118,7 +118,7 @@ lrelease section as well. You can however pull manually to test the process.
 
 #### Translating with QT Linguistic (if Transifex not available)
 
-The translation files are in [i18n](../EdPlanning/resources/i18n) folder. Translatable content in python files is
+The translation files are in [i18n](../Catchment/resources/i18n) folder. Translatable content in python files is
 code such as `tr(u"Hello World")`.
 
 To update language *.ts* files to contain newest lines to translate, run

@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QDialogButtonBox
 from qgis.core import QgsProject, QgsWkbTypes
 
-from EdPlanning.plugin import Plugin
-from EdPlanning.qgis_plugin_tools.tools.settings import get_setting
+from Catchment.plugin import Plugin
+from Catchment.qgis_plugin_tools.tools.settings import get_setting
 
 from .conftest import MOCK_URL, QGIS_APP
 

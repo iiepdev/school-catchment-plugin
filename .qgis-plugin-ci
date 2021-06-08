@@ -1,5 +1,5 @@
-plugin_path: EdPlanning
+plugin_path: Catchment
 github_organization_slug: GispoCoding
-project_slug: edplanning
+project_slug: catchment-plugin
 transifex_coordinator: replace-me
 transifex_organization: replace-me

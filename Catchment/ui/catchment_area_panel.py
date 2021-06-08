@@ -73,6 +73,7 @@ class CatchmentAreaPanel(BasePanel):
                 # assuming driving speed 50 km/h
                 distance_in_minutes_by_foot = 10 * distance_in_minutes_by_foot  # type: ignore  # noqa
             if count:
+                # TODO: improve estimate, larger K and smaller count factor!
                 # Normalize, knowing that 60 minute distance by car
                 # (equivalent of 600 minutes by foot) takes ~ 10 minute
                 # to calculate for 1000 points.

@@ -46,7 +46,7 @@ class Plugin:
 
         self.dlg = MainDialog()
         if not get_setting("gh_url"):
-            set_setting("gh_url", "http://localhost:8989/")
+            set_setting("gh_url", "https://graphhopper.com/api/1")
 
     def add_action(
         self,

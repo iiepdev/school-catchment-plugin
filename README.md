@@ -1,9 +1,9 @@
 
 
-# EdPlanning
-![tests](https://github.com/GispoCoding/edplanning/workflows/Tests/badge.svg)
-[![codecov.io](https://codecov.io/github/GispoCoding/edplanning/coverage.svg?branch=master)](https://codecov.io/github/GispoCoding/edplanning?branch=master)
-![release](https://github.com/GispoCoding/edplanning/workflows/Release/badge.svg)
+# QGIS Catchment plugin
+![tests](https://github.com/GispoCoding/catchment-plugin/workflows/Tests/badge.svg)
+[![codecov.io](https://codecov.io/github/GispoCoding/qgis-catchment-areas/coverage.svg?branch=master)](https://codecov.io/github/GispoCoding/catchment-plugin?branch=master)
+![release](https://github.com/GispoCoding/catchment-plugin/workflows/Release/badge.svg)
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)

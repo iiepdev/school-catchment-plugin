@@ -1,4 +1,4 @@
-EdPlanning/i18n
+Catchment/i18n
 venv/
 .venv/
 start_ide.bat
@@ -7,3 +7,6 @@ start_ide.bat
 gh/graph-cache
 gh/logs
 .idea
+__pycache__
+.vscode
+.DS_Store
