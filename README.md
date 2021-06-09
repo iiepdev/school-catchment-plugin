@@ -10,7 +10,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-QGIS plugin for analysing school accessibility based on OpenStreetMap route data.
+QGIS plugin for analysing e.g. school accessibility based on OpenStreetMap route data.The plugin has been developed together with IIEP-UNESCO and GISPO LTD.
 
 ![Isochrones in QGIS](imgs/screenshot_ui.PNG)
 
