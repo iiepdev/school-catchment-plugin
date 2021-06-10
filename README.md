@@ -16,7 +16,7 @@ This QGIS plugin has been created for educational planning professionals to anal
 
 ![Isochrones in QGIS](imgs/screenshot_ui.PNG)
 
-A paper is under production, to be published under the citation IIEP-UNESCO and GISPO LTD. Forthcoming 2021. Isochrone-based catchment areas for educational planning. Paris: IIEP-UNESCO. www.iiep.unesco.org/geo
+A paper is under production, to be published under the citation IIEP-UNESCO and GISPO LTD. Forthcoming 2021. *Isochrone-based catchment areas for educational planning.* Paris: IIEP-UNESCO. www.iiep.unesco.org/geo
 
 Designations employed and the presentation of the materials resulting from the use of this code do not imply the expression of any opinion whatsoever from the UN, UNESCO, or IIEP-UNESCO concerning the legal status of any country, territory, city, area, authorities, concerning the delimitation of frontiers or boundaries.
 
