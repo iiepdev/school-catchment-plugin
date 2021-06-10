@@ -24,6 +24,8 @@ This material has been partly funded by UK aid from the UK government; however i
 
 ---
 
+### How to get started
+
 Currently, the plugin calculates catchment areas (isochrones) for a specified layer of schools with a selected mode of transport (walking/hiking, cycling, driving) and a selected distance in metres or duration in minutes (e.g. 1500 metres, 30 minutes of transit).
 
 The plugin employs the [Graphhopper routing backend](https://github.com/graphhopper/graphhopper). Therefore, the user must have a Graphhopper instance running, or they may use [a commercial Graphhopper service](https://www.graphhopper.com/). The plugin assumes that the Graphhopper config contains at least the following routing profiles:
@@ -41,8 +43,6 @@ The plugin employs the [Graphhopper routing backend](https://github.com/graphhop
 ```
 
 See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopper-docker) for simple instructions on how to set up GraphHopper using Docker. The setup and config stored in that repository works directly with the tool.
-
-### How to get started
 
 ![Settings panel](imgs/settings.png)
 
