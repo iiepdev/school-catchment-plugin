@@ -12,5 +12,5 @@ repository=https://github.com/GispoCoding/catchment-plugin
 homepage=https://github.com/GispoCoding/catchment-plugin
 tracker=https://github.com/GispoCoding/catchment-plugin/issues
 category=Plugins
-experimental=True
+experimental=False
 deprecated=False
