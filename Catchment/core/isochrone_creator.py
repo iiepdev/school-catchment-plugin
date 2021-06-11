@@ -158,7 +158,7 @@ class IsochroneCreator(QgsTask):
         if not result:
             if not self.result_layer:
                 MAIN_LOGGER.error(
-                    "Graphhopper request failed",
+                    f"Graphhopper request to {self.base_url} failed",
                     extra={
                         "details": "Please check your Graphhopper url and your Internet connection."  # noqa
                     },
