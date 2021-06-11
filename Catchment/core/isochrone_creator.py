@@ -66,7 +66,8 @@ class IsochroneCreator(QgsTask):
             if not self.base_url.startswith("http://") and not self.base_url.startswith(
                 "https://"
             ):
-                self.base_url = "https://" + self.base_url
+                # our instance does not support https out of the box
+                self.base_url = "http://" + self.base_url
             if not self.base_url[-1] == "/":
                 self.base_url += "/"
             self.base_url += "isochrone"
