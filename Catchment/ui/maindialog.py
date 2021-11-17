@@ -91,8 +91,8 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         sg = QDesktopWidget().screenGeometry()
 
         widget = self.geometry()
-        x = (ag.width() - widget.width()) / 1.5
-        y = 2 * ag.height() - sg.height() - 1.2 * widget.height()
+        x = int((ag.width() - widget.width()) / 1.5)
+        y = int(2 * ag.height() - sg.height() - 1.2 * widget.height())
         self.move(x, y)
 
     @staticmethod
