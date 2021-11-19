@@ -183,8 +183,8 @@ class IsochroneCreator(QgsTask):
         )
         self.name = (
             f"{self.opts.distance} {self.opts.unit.value} {direction_string}"
-            f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}"
-        )  # type: ignore  # noqa
+            f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}"  # type: ignore  # noqa
+        )
 
         super().__init__(description=f"Fetching GraphHopper isochrones: {self.name}")
         self.setProgress(0.0)
