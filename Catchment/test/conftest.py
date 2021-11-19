@@ -25,19 +25,10 @@ from Catchment.core.isochrone_creator import IsochroneOpts
 from Catchment.definitions.constants import Profile, Unit
 from Catchment.plugin import Plugin
 
-from ..qgis_plugin_tools.testing.utilities import get_qgis_app
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
 from ..qgis_plugin_tools.tools.i18n import tr
 
-QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 MOCK_URL = "http://mock.url"
-
-
-@pytest.fixture(autouse=True)
-def new_project() -> None:
-    """Initializes the QGIS project by removing layers and relations etc."""  # noqa E501
-    # yields nothing
-    yield IFACE.newProject()
 
 
 @pytest.fixture(scope="function")
@@ -210,8 +201,8 @@ def isochrone_opts(point_layer, request) -> None:
 
 
 @pytest.fixture(scope="function")
-def new_plugin(isochrone_opts) -> None:
-    plugin = Plugin(IFACE)
+def new_plugin(qgis_iface, isochrone_opts) -> None:
+    plugin = Plugin(qgis_iface)
     plugin.initGui()
     # mock options, since mock QgisInterface does not support QgsMapLayerComboBox
     plugin.dlg.read_isochrone_options = lambda: isochrone_opts
