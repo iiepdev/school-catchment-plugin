@@ -19,7 +19,7 @@ from qgis.core import (
     QgsTask,
     QgsVectorFileWriter,
     QgsVectorLayer,
-    QgsWkbTypes
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtNetwork import QNetworkReply
