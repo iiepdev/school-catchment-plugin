@@ -12,14 +12,19 @@ from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException
 # 3) multipolygon school area boundary => should yield single polygon intersection with isochrone.json
 # 4) triangular school area boundary => should yield multipolygon intersection with isochrone.json
 # 5) square+triangular school area boundary => should yield single polygon intersection with isochrone.json
-@pytest.mark.parametrize("boundary_layer, part_count", [
-    (None, 1),
-    ('square_layer', 1),
-    ('multipolygon_layer', 1),
-    ('triangle_layer', 3),
-    ('square_plus_triangle_layer', 1)
-])
-def test_isochrone_layer_isochrone_created(isochrone_opts, mock_fetch, boundary_layer, part_count, request):
+@pytest.mark.parametrize(
+    "boundary_layer, part_count",
+    [
+        (None, 1),
+        ("square_layer", 1),
+        ("multipolygon_layer", 1),
+        ("triangle_layer", 3),
+        ("square_plus_triangle_layer", 1),
+    ],
+)
+def test_isochrone_layer_isochrone_created(
+    isochrone_opts, mock_fetch, boundary_layer, part_count, request
+):
     if boundary_layer:
         boundary_layer = request.getfixturevalue(boundary_layer)
     mock_fetch(isochrone_opts.url + "/isochrone")
@@ -36,9 +41,9 @@ def test_isochrone_layer_isochrone_created(isochrone_opts, mock_fetch, boundary_
         if not boundary_layer:
             assert feature.attribute("boundary_fids") == ""
         else:
-            assert feature.attribute("boundary_fids") == ",".join([
-                str(feature["fid"]) for feature in boundary_layer.getFeatures()
-                ])
+            assert feature.attribute("boundary_fids") == ",".join(
+                [str(feature["fid"]) for feature in boundary_layer.getFeatures()]
+            )
         assert len(feature.geometry().asMultiPolygon()) == part_count
 
 

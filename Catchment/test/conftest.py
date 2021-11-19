@@ -69,15 +69,38 @@ def point() -> None:
 @pytest.fixture(scope="function")
 def square() -> None:
     yield QgsGeometry.fromPolygonXY(
-        [[QgsPointXY(0.0, 0.0), QgsPointXY(2.0, 0.0), QgsPointXY(2.0, 2.0), QgsPointXY(0.0, 2.0)]]
+        [
+            [
+                QgsPointXY(0.0, 0.0),
+                QgsPointXY(2.0, 0.0),
+                QgsPointXY(2.0, 2.0),
+                QgsPointXY(0.0, 2.0),
+            ]
+        ]
     )
 
 
 @pytest.fixture(scope="function")
 def multipolygon() -> None:
     yield QgsGeometry.fromMultiPolygonXY(
-        [[[QgsPointXY(0.0, 0.0), QgsPointXY(2.0, 0.0), QgsPointXY(2.0, 2.0), QgsPointXY(0.0, 2.0)]],
-        [[QgsPointXY(4.0, 4.0), QgsPointXY(6.0, 4.0), QgsPointXY(6.0, 6.0), QgsPointXY(4.0, 6.0)]]]
+        [
+            [
+                [
+                    QgsPointXY(0.0, 0.0),
+                    QgsPointXY(2.0, 0.0),
+                    QgsPointXY(2.0, 2.0),
+                    QgsPointXY(0.0, 2.0),
+                ]
+            ],
+            [
+                [
+                    QgsPointXY(4.0, 4.0),
+                    QgsPointXY(6.0, 4.0),
+                    QgsPointXY(6.0, 6.0),
+                    QgsPointXY(4.0, 6.0),
+                ]
+            ],
+        ]
     )
 
 
@@ -145,7 +168,9 @@ def point_layer(fields, point_feature) -> None:
 
 @pytest.fixture(scope="function")
 def square_layer(fields, square_feature) -> None:
-    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    layer = QgsVectorLayer(
+        "Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory"
+    )
     provider = layer.dataProvider()
     provider.addAttributes(fields)
     layer.updateFields()
@@ -156,7 +181,9 @@ def square_layer(fields, square_feature) -> None:
 
 @pytest.fixture(scope="function")
 def multipolygon_layer(fields, multipolygon_feature) -> None:
-    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    layer = QgsVectorLayer(
+        "Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory"
+    )
     provider = layer.dataProvider()
     provider.addAttributes(fields)
     layer.updateFields()
@@ -167,7 +194,9 @@ def multipolygon_layer(fields, multipolygon_feature) -> None:
 
 @pytest.fixture(scope="function")
 def triangle_layer(fields, triangle_feature) -> None:
-    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    layer = QgsVectorLayer(
+        "Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory"
+    )
     provider = layer.dataProvider()
     provider.addAttributes(fields)
     layer.updateFields()
@@ -178,7 +207,9 @@ def triangle_layer(fields, triangle_feature) -> None:
 
 @pytest.fixture(scope="function")
 def square_plus_triangle_layer(fields, square_feature, triangle_feature) -> None:
-    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    layer = QgsVectorLayer(
+        "Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory"
+    )
     provider = layer.dataProvider()
     provider.addAttributes(fields)
     layer.updateFields()

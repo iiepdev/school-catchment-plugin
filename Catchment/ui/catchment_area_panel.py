@@ -126,7 +126,7 @@ class CatchmentAreaPanel(BasePanel):
     def on_checkbox_limit_to_polygon_clicked(self) -> None:
         self.dlg.combobox_polygon_layer.setEnabled(
             not self.dlg.combobox_polygon_layer.isEnabled()
-            )
+        )
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()
