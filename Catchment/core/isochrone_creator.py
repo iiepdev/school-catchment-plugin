@@ -5,8 +5,6 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import qgis.processing
-from PyQt5.QtCore import QVariant
-from PyQt5.QtNetwork import QNetworkReply
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
@@ -23,6 +21,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsWkbTypes
 )
+from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtNetwork import QNetworkReply
 
 from ..definitions.constants import Profile, Unit
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNetworkException

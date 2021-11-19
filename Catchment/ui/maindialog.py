@@ -1,13 +1,13 @@
 import logging
 
-from PyQt5.QtWidgets import (
+from qgis.core import QgsApplication
+from qgis.PyQt.QtWidgets import (
     QDesktopWidget,
     QDialog,
     QDialogButtonBox,
     QRadioButton,
     QWidget,
 )
-from qgis.core import QgsApplication
 
 from ..core.isochrone_creator import IsochroneCreator, IsochroneOpts
 from ..definitions.constants import Profile, Unit

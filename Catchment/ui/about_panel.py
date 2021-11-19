@@ -1,6 +1,6 @@
 import logging
 
-from PyQt5.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.i18n import tr

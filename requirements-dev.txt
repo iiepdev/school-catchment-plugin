@@ -1,6 +1,6 @@
+flake8-qgis~=1.0.0
 pre-commit>=2.12.1
 pytest~=6.2.3
 pytest-mock~=3.6.1
-pytest-qgis~=1.0.2
 pytest-qt~=3.3.0
 qgis_plugin_ci~=1.8.4

@@ -2,8 +2,8 @@ import logging
 from math import floor, pow
 from typing import Optional
 
-from PyQt5.QtWidgets import QDialog
 from qgis.core import QgsMapLayerProxyModel
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.constants import Profile, Unit
 from ..definitions.gui import Panels
@@ -124,7 +124,9 @@ class CatchmentAreaPanel(BasePanel):
         self.__update_duration_label()
 
     def on_checkbox_limit_to_polygon_clicked(self) -> None:
-        self.dlg.combobox_polygon_layer.setEnabled(not self.dlg.combobox_polygon_layer.isEnabled())
+        self.dlg.combobox_polygon_layer.setEnabled(
+            not self.dlg.combobox_polygon_layer.isEnabled()
+            )
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()
