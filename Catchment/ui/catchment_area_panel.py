@@ -25,6 +25,8 @@ class CatchmentAreaPanel(BasePanel):
 
     def setup_panel(self) -> None:
         self.dlg.combobox_layer.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.dlg.combobox_polygon_layer.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        self.dlg.combobox_polygon_layer.setEnabled(False)
         self.__update_duration_label()
 
         # connect the signals, since pyqt slot decorator cannot be used
@@ -36,8 +38,14 @@ class CatchmentAreaPanel(BasePanel):
         self.dlg.combobox_layer.layerChanged.connect(
             self.on_combobox_layer_layerChanged
         )
+        self.dlg.combobox_polygon_layer.layerChanged.connect(
+            self.on_combobox_polygon_layer_layerChanged
+        )
         self.dlg.checkbox_selected_only.clicked.connect(
             self.on_checkbox_selected_only_clicked
+        )
+        self.dlg.checkbox_limit_to_polygon.clicked.connect(
+            self.on_checkbox_limit_to_polygon_clicked
         )
         self.dlg.spinbox_distance.valueChanged.connect(
             self.on_spinbox_distance_valueChanged
@@ -109,8 +117,14 @@ class CatchmentAreaPanel(BasePanel):
     def on_combobox_layer_layerChanged(self) -> None:  # noqa
         self.__update_duration_label()
 
+    def on_combobox_polygon_layer_layerChanged(self) -> None:  # noqa
+        pass
+
     def on_checkbox_selected_only_clicked(self) -> None:
         self.__update_duration_label()
+
+    def on_checkbox_limit_to_polygon_clicked(self) -> None:
+        self.dlg.combobox_polygon_layer.setEnabled(not self.dlg.combobox_polygon_layer.isEnabled())
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()

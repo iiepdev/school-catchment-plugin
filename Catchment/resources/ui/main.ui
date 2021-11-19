@@ -112,13 +112,13 @@
          <x>0</x>
          <y>0</y>
          <width>500</width>
-         <height>450</height>
+         <height>520</height>
         </rect>
        </property>
        <property name="minimumSize">
         <size>
          <width>500</width>
-         <height>450</height>
+         <height>520</height>
         </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -180,14 +180,24 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                 <item row="3" column="1">
+                  <widget class="QCheckBox" name="checkbox_limit_to_polygon">
+                   <property name="text">
+                    <string>Limit areas to polygon boundaries</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QgsMapLayerComboBox" name="combobox_polygon_layer"/>
+                 </item>
+                 <item row="5" column="0">
                   <widget class="QLabel" name="label_buckets">
                    <property name="text">
                     <string>Distance divisions</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item row="5" column="1">
                   <widget class="QgsSpinBox" name="spinbox_buckets">
                    <property name="minimum">
                     <number>1</number>

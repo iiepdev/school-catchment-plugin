@@ -67,6 +67,8 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts.write_to_directory = self.checkbox_file.isChecked()
         opts.directory = self.file_widget.filePath()
         opts.layer = self.combobox_layer.currentLayer()
+        opts.polygon_layer = self.combobox_polygon_layer.currentLayer() if \
+            self.checkbox_limit_to_polygon.isChecked() else None
         opts.selected_only = self.checkbox_selected_only.isChecked()
         opts.distance = self.spinbox_distance.value()
         opts.buckets = self.spinbox_buckets.value()

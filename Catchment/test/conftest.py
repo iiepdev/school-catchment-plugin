@@ -15,7 +15,9 @@ from qgis.core import (
     QgsField,
     QgsFields,
     QgsGeometry,
+    QgsLineString,
     QgsPointXY,
+    QgsPolygon,
     QgsVectorLayer,
 )
 
@@ -70,7 +72,29 @@ def mock_fetch(mocker, request) -> None:
 
 @pytest.fixture(scope="function")
 def point() -> None:
-    yield QgsPointXY(1.0, 1.0)
+    yield QgsGeometry.fromPointXY(QgsPointXY(1.0, 1.0))
+
+
+@pytest.fixture(scope="function")
+def square() -> None:
+    yield QgsGeometry.fromPolygonXY(
+        [[QgsPointXY(0.0, 0.0), QgsPointXY(2.0, 0.0), QgsPointXY(2.0, 2.0), QgsPointXY(0.0, 2.0)]]
+    )
+
+
+@pytest.fixture(scope="function")
+def multipolygon() -> None:
+    yield QgsGeometry.fromMultiPolygonXY(
+        [[[QgsPointXY(0.0, 0.0), QgsPointXY(2.0, 0.0), QgsPointXY(2.0, 2.0), QgsPointXY(0.0, 2.0)]],
+        [[QgsPointXY(4.0, 4.0), QgsPointXY(6.0, 4.0), QgsPointXY(6.0, 6.0), QgsPointXY(4.0, 6.0)]]]
+    )
+
+
+@pytest.fixture(scope="function")
+def triangle() -> None:
+    yield QgsGeometry.fromPolygonXY(
+        [[QgsPointXY(-1.0, -1.0), QgsPointXY(3.0, -1.0), QgsPointXY(1.0, 2.0)]]
+    )
 
 
 @pytest.fixture(scope="function")
@@ -84,14 +108,41 @@ def fields() -> None:
 @pytest.fixture(scope="function")
 def point_feature(fields, point) -> None:
     feature = QgsFeature(fields)
-    feature.setGeometry(QgsGeometry.fromPointXY(point))
+    feature.setGeometry(point)
     feature.setAttribute("id", 1)
     feature.setAttribute("name", "school")
     yield feature
 
 
 @pytest.fixture(scope="function")
-def vector_layer(fields, point_feature) -> None:
+def square_feature(fields, square) -> None:
+    feature = QgsFeature(fields)
+    feature.setGeometry(square)
+    feature.setAttribute("id", 1)
+    feature.setAttribute("name", "square_school_area_boundary")
+    yield feature
+
+
+@pytest.fixture(scope="function")
+def multipolygon_feature(fields, multipolygon) -> None:
+    feature = QgsFeature(fields)
+    feature.setGeometry(multipolygon)
+    feature.setAttribute("id", 1)
+    feature.setAttribute("name", "multipolygon_school_area_boundary")
+    yield feature
+
+
+@pytest.fixture(scope="function")
+def triangle_feature(fields, triangle) -> None:
+    feature = QgsFeature(fields)
+    feature.setGeometry(triangle)
+    feature.setAttribute("id", 1)
+    feature.setAttribute("name", "triangular_school_area_boundary")
+    yield feature
+
+
+@pytest.fixture(scope="function")
+def point_layer(fields, point_feature) -> None:
     layer = QgsVectorLayer("Point?crs=epsg:4326&index=yes", "test_points", "memory")
     provider = layer.dataProvider()
     provider.addAttributes(fields)
@@ -102,10 +153,55 @@ def vector_layer(fields, point_feature) -> None:
 
 
 @pytest.fixture(scope="function")
-def isochrone_opts(vector_layer) -> None:
+def square_layer(fields, square_feature) -> None:
+    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
+    provider.addFeature(square_feature)
+    layer.updateExtents()
+    yield layer
+
+
+@pytest.fixture(scope="function")
+def multipolygon_layer(fields, multipolygon_feature) -> None:
+    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
+    provider.addFeature(multipolygon_feature)
+    layer.updateExtents()
+    yield layer
+
+
+@pytest.fixture(scope="function")
+def triangle_layer(fields, triangle_feature) -> None:
+    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
+    provider.addFeature(triangle_feature)
+    layer.updateExtents()
+    yield layer
+
+
+@pytest.fixture(scope="function")
+def square_plus_triangle_layer(fields, square_feature, triangle_feature) -> None:
+    layer = QgsVectorLayer("Polygon?crs=epsg:4326&index=yes", "test_boundaries", "memory")
+    provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
+    provider.addFeature(square_feature)
+    provider.addFeature(triangle_feature)
+    layer.updateExtents()
+    yield layer
+
+
+@pytest.fixture(scope="function")
+def isochrone_opts(point_layer, request) -> None:
     opts = IsochroneOpts(
         url=MOCK_URL,
-        layer=vector_layer,
+        layer=point_layer,
         distance=30,
         unit=Unit.MINUTES,
         profile=Profile.WALKING,

@@ -21,6 +21,7 @@ from qgis.core import (
     QgsTask,
     QgsVectorFileWriter,
     QgsVectorLayer,
+    QgsWkbTypes
 )
 
 from ..definitions.constants import Profile, Unit
@@ -39,6 +40,7 @@ class IsochroneOpts:
     url: str = ""
     api_key: str = ""
     layer: Optional[QgsVectorLayer] = None
+    polygon_layer: Optional[QgsVectorLayer] = None
     selected_only: bool = False
     distance: Optional[int] = None
     unit: Optional[Unit] = None
@@ -59,7 +61,8 @@ class IsochroneCreator(QgsTask):
     def __init__(self, opts: IsochroneOpts) -> None:
         self.opts = opts
         self.result_layer: Optional[QgsVectorLayer] = None
-        self.points = []
+        self.points: list[QgsFeature] = []
+        self.limiting_polygons: list[QgsFeature] = []
         # no type checking needed, since we check if options are set
         if self.opts.check_if_opts_set():
             self.base_url = self.opts.url
@@ -84,8 +87,9 @@ class IsochroneCreator(QgsTask):
             else:
                 self.params["time_limit"] = 60 * self.opts.distance  # type: ignore
 
-            # reproject layer if needed
+            # reproject layers if needed
             layer: QgsVectorLayer = self.opts.layer
+            polygon_layer: Optional[QgsVectorLayer] = self.opts.polygon_layer
             wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
             if layer.crs() != wgs84:
                 selected_ids = [
@@ -103,6 +107,19 @@ class IsochroneCreator(QgsTask):
                     "OUTPUT"
                 ]
                 layer.select(selected_ids)
+            if polygon_layer and polygon_layer.crs() != wgs84:
+                MAIN_LOGGER.info(
+                    (f"Limit polygon layer in {polygon_layer.crs().authid()},"
+                     f" reprojecting to WGS 84 first.")
+                )
+                alg_params = {
+                    "INPUT": polygon_layer,
+                    "OUTPUT": QgsProcessing.TEMPORARY_OUTPUT,
+                    "TARGET_CRS": wgs84,
+                }
+                polygon_layer = qgis.processing.run(
+                    "native:reprojectlayer", alg_params)["OUTPUT"]
+
             # QgsVectorLayer from main thread may not be used in other threads?
             # How about the QgsFeatures we list here, seems to work fine?
             self.points = (
@@ -110,12 +127,52 @@ class IsochroneCreator(QgsTask):
                 if self.opts.selected_only
                 else list(layer.getFeatures())
             )
+            if polygon_layer:
+                # Store one boundary polygon per point. Store all original polygon ids.
+                fields = QgsFields(polygon_layer.fields())
+                boundary_fid_field = QgsField(
+                    name="fids", type=QVariant.String, typeName="varchar"
+                )
+                fields.append(boundary_fid_field)
+                for point in self.points:
+                    # - In case a point is located inside multiple polygons, consider
+                    #   all of them, i.e. their intersection.
+                    # - In case a point has no boundary polygon, do not limit it.
+                    boundary_polygon = None
+                    for polygon in polygon_layer.getFeatures():
+                        if point.geometry().intersects(polygon.geometry()):
+                            if not boundary_polygon:
+                                # Here the boundary polygon will get all other fields
+                                # from the *first* polygon. Doesn't matter as long as
+                                # we only save the ids in the end
+                                boundary_polygon = QgsFeature(polygon)
+                                boundary_polygon.setFields(fields)
+                                boundary_polygon['fids'] = str(polygon['fid'])
+                            else:
+                                intersection_parts = boundary_polygon.geometry().\
+                                    intersection(polygon.geometry()).\
+                                    asGeometryCollection()
+                                intersection_geometry = QgsGeometry.fromMultiPolygonXY(
+                                    [geometry.asPolygon()
+                                        for geometry in intersection_parts
+                                        if geometry.wkbType() == QgsWkbTypes.Polygon]
+                                )
+                                boundary_polygon.setGeometry(intersection_geometry)
+                                boundary_polygon['fids'] += f",{polygon['fid']}"
+                    self.limiting_polygons.append(boundary_polygon)
+            else:
+                # no limiting polygons for any of the points
+                self.limiting_polygons = len(self.points)*[None]
+
         profile_string = (
             f" by {self.opts.profile.value}" if self.opts.unit == Unit.MINUTES else ""  # type: ignore  # noqa
         )
         direction_string = "to" if self.params["reverse_flow"] else "from"
         selected_string = "selected " if self.opts.selected_only else ""
-        self.name = f"{self.opts.distance} {self.opts.unit.value} {direction_string} {selected_string}{self.opts.layer.name()}{profile_string}"  # type: ignore  # noqa
+        limited_string = f" limited by {self.opts.polygon_layer.name()}" if \
+            self.opts.polygon_layer else ""
+        self.name = (f"{self.opts.distance} {self.opts.unit.value} {direction_string}"
+            f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}")  # type: ignore  # noqa
 
         super().__init__(description=f"Fetching GraphHopper isochrones: {self.name}")
         self.setProgress(0.0)
@@ -217,7 +274,8 @@ class IsochroneCreator(QgsTask):
 
     def __add_isochrones_to_layer(self, layer: QgsVectorLayer) -> None:
         TASK_LOGGER.info("Starting isochrone fetch...")
-        for idx, point in enumerate(self.points):
+        for idx, (point, boundary) in enumerate(
+                zip(self.points, self.limiting_polygons)):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
                 feature = QgsFeature(layer.fields())
@@ -230,20 +288,31 @@ class IsochroneCreator(QgsTask):
                 distance = (bucket + 1) * (
                     self.opts.distance / self.opts.buckets  # type: ignore
                 )
-                feature.setAttribute("isochrone_distance", distance)
+                feature["isochrone_distance"] = distance
 
-                feature.setGeometry(
-                    QgsGeometry.fromPolygonXY(
-                        [
-                            [
-                                QgsPointXY(pt[0], pt[1])
-                                for pt in polygon_in_bucket["geometry"]["coordinates"][
-                                    0
-                                ]
-                            ]
-                        ]
+                isochrone = QgsGeometry.fromMultiPolygonXY(
+                        [[[QgsPointXY(pt[0], pt[1])
+                          for pt in polygon_in_bucket["geometry"]["coordinates"][0]
+                           ]]]
                     )
-                )
+                if boundary:
+                    feature["boundary_fids"] = boundary["fids"]
+                    isochrone_parts = boundary.geometry().\
+                        intersection(isochrone).asGeometryCollection()
+                    # After intersecting with the boundary, the isochrone may be a
+                    # GeometryCollection of Polygons, LineStrings and Points. We are
+                    # only interested in 2D areas, so collect all the Polygons to a
+                    # MultiPolygon.
+                    isochrone = QgsGeometry.fromMultiPolygonXY(
+                        [geometry.asPolygon()
+                            for geometry in isochrone_parts
+                            if geometry.wkbType() == QgsWkbTypes.Polygon
+                         ]
+                    )
+                else:
+                    feature["boundary_fids"] = ""
+
+                feature.setGeometry(isochrone)
                 layer.dataProvider().addFeature(feature)
             if idx and idx % 10 == 0:
                 TASK_LOGGER.info(
@@ -269,7 +338,11 @@ class IsochroneCreator(QgsTask):
         distance_field = QgsField(
             name="isochrone_distance", type=QVariant.Double, typeName="double"
         )
+        boundary_fid_field = QgsField(
+            name="boundary_fids", type=QVariant.String, typeName="varchar"
+        )
         fields.append(distance_field)
+        fields.append(boundary_fid_field)
         provider = isochrone_layer.dataProvider()
         provider.addAttributes(fields)
         isochrone_layer.updateFields()
