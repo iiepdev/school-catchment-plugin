@@ -91,7 +91,7 @@ def triangle() -> None:
 @pytest.fixture(scope="function")
 def fields() -> None:
     fields = QgsFields()
-    fields.append(QgsField("id", QVariant.Int))
+    fields.append(QgsField("fid", QVariant.Int))
     fields.append(QgsField("name", QVariant.String))
     yield fields
 
@@ -100,7 +100,7 @@ def fields() -> None:
 def point_feature(fields, point) -> None:
     feature = QgsFeature(fields)
     feature.setGeometry(point)
-    feature.setAttribute("id", 1)
+    feature.setAttribute("fid", 1)
     feature.setAttribute("name", "school")
     yield feature
 
@@ -109,7 +109,7 @@ def point_feature(fields, point) -> None:
 def square_feature(fields, square) -> None:
     feature = QgsFeature(fields)
     feature.setGeometry(square)
-    feature.setAttribute("id", 1)
+    feature.setAttribute("fid", 1)
     feature.setAttribute("name", "square_school_area_boundary")
     yield feature
 
@@ -118,7 +118,7 @@ def square_feature(fields, square) -> None:
 def multipolygon_feature(fields, multipolygon) -> None:
     feature = QgsFeature(fields)
     feature.setGeometry(multipolygon)
-    feature.setAttribute("id", 1)
+    feature.setAttribute("fid", 1)
     feature.setAttribute("name", "multipolygon_school_area_boundary")
     yield feature
 
@@ -127,7 +127,7 @@ def multipolygon_feature(fields, multipolygon) -> None:
 def triangle_feature(fields, triangle) -> None:
     feature = QgsFeature(fields)
     feature.setGeometry(triangle)
-    feature.setAttribute("id", 1)
+    feature.setAttribute("fid", 1)
     feature.setAttribute("name", "triangular_school_area_boundary")
     yield feature
 

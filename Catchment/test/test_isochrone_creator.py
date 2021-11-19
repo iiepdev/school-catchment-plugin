@@ -37,7 +37,7 @@ def test_isochrone_layer_isochrone_created(isochrone_opts, mock_fetch, boundary_
             assert feature.attribute("boundary_fids") == ""
         else:
             assert feature.attribute("boundary_fids") == ",".join([
-                str(feature["id"]) for feature in boundary_layer.getFeatures()
+                str(feature["fid"]) for feature in boundary_layer.getFeatures()
                 ])
         assert len(feature.geometry().asMultiPolygon()) == part_count
 
