@@ -232,8 +232,8 @@ def isochrone_opts(point_layer, request) -> None:
 
 
 @pytest.fixture(scope="function")
-def new_plugin(isochrone_opts) -> None:
-    plugin = Plugin()
+def new_plugin(qgis_iface, isochrone_opts) -> None:
+    plugin = Plugin(qgis_iface)
     plugin.initGui()
     # mock options, since mock QgisInterface does not support QgsMapLayerComboBox
     plugin.dlg.read_isochrone_options = lambda: isochrone_opts

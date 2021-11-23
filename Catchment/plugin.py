@@ -3,7 +3,7 @@ from typing import Callable, List, Optional
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QWidget
-from qgis.utils import iface
+from qgis.gui import QgisInterface
 
 from .core.isochrone_creator import IsochroneCreator
 from .qgis_plugin_tools.tools.custom_logging import (
@@ -20,8 +20,9 @@ from .ui.maindialog import MainDialog
 class Plugin:
     """QGIS Plugin Implementation."""
 
-    def __init__(self) -> None:
+    def __init__(self, iface: QgisInterface) -> None:  # noqa
 
+        self.iface = iface
         # store the task here so it survives garbage collection after run method returns
         self.creator: Optional[IsochroneCreator] = None
 
@@ -104,10 +105,10 @@ class Plugin:
 
         if add_to_toolbar:
             # Adds plugin icon to Plugins toolbar
-            iface.addToolBarIcon(action)
+            self.iface.addToolBarIcon(action)
 
         if add_to_menu:
-            iface.addPluginToMenu(self.menu, action)
+            self.iface.addPluginToMenu(self.menu, action)
 
         self.actions.append(action)
 
@@ -119,7 +120,7 @@ class Plugin:
             "",
             text=tr(plugin_name()),
             callback=self.run,
-            parent=iface.mainWindow(),
+            parent=self.iface.mainWindow(),
         )
 
     def onClosePlugin(self) -> None:  # noqa N802
@@ -129,8 +130,8 @@ class Plugin:
     def unload(self) -> None:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
-            iface.removePluginMenu(tr(plugin_name()), action)
-            iface.removeToolBarIcon(action)
+            self.iface.removePluginMenu(tr(plugin_name()), action)
+            self.iface.removeToolBarIcon(action)
         teardown_logger(plugin_name())
         teardown_logger(f"{plugin_name()}_task")
 

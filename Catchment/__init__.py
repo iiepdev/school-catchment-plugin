@@ -15,4 +15,4 @@ if os.environ.get("QGIS_PLUGIN_USE_DEBUGGER") == "pydevd":
 def classFactory(iface: QgisInterface):  # noqa N802
     from .plugin import Plugin
 
-    return Plugin()
+    return Plugin(iface)
