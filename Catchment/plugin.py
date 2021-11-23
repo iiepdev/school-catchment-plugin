@@ -1,9 +1,9 @@
 from typing import Callable, List, Optional
 
+from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QWidget
-from qgis.gui import QgisInterface
 
 from .core.isochrone_creator import IsochroneCreator
 from .qgis_plugin_tools.tools.custom_logging import (
