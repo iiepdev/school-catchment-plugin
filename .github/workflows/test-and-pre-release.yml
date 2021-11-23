@@ -31,7 +31,7 @@ jobs:
 
       # Runs all tests
       - name: Run tests
-        run: docker run --rm --net=host --volume `pwd`:/app -w=/app -e QGIS_PLUGIN_IN_CI=1 qgis/qgis:${{ matrix.docker_tags }} sh -c "pip3 install -q -r requirements-test.txt pytest-cov && xvfb-run -s '+extension GLX -screen 0 1024x768x24' pytest -v --cov --cov-report=xml"
+        run: docker run --rm --net=host --volume `pwd`:/app -w=/app -e QGIS_PLUGIN_IN_CI=1 qgis/qgis:${{ matrix.docker_tags }} sh -c "pip3 install -q -r requirements-test.txt pytest-cov && xvfb-run -s '+extension GLX -screen 0 1024x768x24' pytest -v --cov --cov-report=xml Catchment/test"
 
       # Upload coverage report. Will not work if the repo is private
       - name: Upload coverage to Codecov
@@ -62,7 +62,7 @@ jobs:
           $env:PATH="C:\Program Files\QGIS 3.16\bin;$env:PATH"
           $env:QGIS_PLUGIN_IN_CI=1
           python-qgis-ltr.bat -m pip install -q -r requirements-test.txt
-          python-qgis-ltr.bat -m pytest -v
+          python-qgis-ltr.bat -m pytest -v Catchment/test
 
   pre-release:
     name: "Pre Release"
