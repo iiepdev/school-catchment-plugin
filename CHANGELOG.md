@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [0.2.1] - 2021-11-24
+
+### Changed
+
+- Fixes to release workflow
+
 ## [0.2.0] - 2021-11-24
 
 ### Added
