@@ -1,16 +1,20 @@
 [general]
 name=Catchment
-description=Calculate point catchment areas (isochrones) using Graphhopper on OpenStreetMap roads
-about=This plugin requires access to a Graphhopper API (https://www.graphhopper.com), or your own Graphhopper deployment (https://github.com/GispoCoding/graphhopper-docker).
-version=0.1.0
+description=Calculate point catchment areas (isochrones) using Graphhopper on OpenStreetMap roads, e.g. for educational planning.
+version=0.2.0
+about=This is a plugin to calculate travel time to a point (e.g. school), from any polygon, to better understand patterns of access and improve educational planning.
+ 
+ The plugin is using Graphhopper on OpenStreetMap roads, and requires access to a Graphhopper API (https://www.graphhopper.com), or your own Graphhopper deployment (e.g. https://github.com/GispoCoding/graphhopper-docker).
+ 
+ Was this plugin useful? Let us know by sending a message to development@iiep.unesco.org
 qgisMinimumVersion=3.16
-author=Gispo Ltd.
+author=IIEP-UNESCO and Gispo Ltd.
 email=riku@gispo.fi
 changelog=
 tags=catchment area,graphhopper,catchment,isochrone
-repository=https://github.com/GispoCoding/catchment-plugin
-homepage=https://github.com/GispoCoding/catchment-plugin
-tracker=https://github.com/GispoCoding/catchment-plugin/issues
+repository=https://github.com/iiepdev/school-catchment-plugin
+homepage=https://github.com/iiepdev/school-catchment-plugin
+tracker=https://github.com/iiepdev/school-catchment-plugin/issues
 category=Plugins
 experimental=False
 deprecated=False
