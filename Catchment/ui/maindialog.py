@@ -73,6 +73,11 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             else None
         )
         opts.selected_only = self.checkbox_selected_only.isChecked()
+        opts.merge_by_field = (
+            self.combobox_layer_field.currentField()
+            if self.checkbox_combine_by_field.isChecked()
+            else None
+        )
         opts.distance = self.spinbox_distance.value()
         opts.buckets = self.spinbox_buckets.value()
 

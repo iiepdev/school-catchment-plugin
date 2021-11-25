@@ -112,13 +112,13 @@
          <x>0</x>
          <y>0</y>
          <width>500</width>
-         <height>520</height>
+         <height>550</height>
         </rect>
        </property>
        <property name="minimumSize">
         <size>
          <width>500</width>
-         <height>520</height>
+         <height>550</height>
         </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -147,31 +147,14 @@
                  <item row="0" column="1">
                   <widget class="QgsMapLayerComboBox" name="combobox_layer"/>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QCheckBox" name="checkbox_selected_only">
-                   <property name="text">
-                    <string>Use only selected features</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QCheckBox" name="checkbox_limit_to_polygon">
-                   <property name="text">
-                    <string>Limit areas to polygon boundaries</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QgsMapLayerComboBox" name="combobox_polygon_layer"/>
-                 </item>
-                 <item row="4" column="0">
+                 <item row="1" column="0">
                   <widget class="QLabel" name="label_distance">
                    <property name="text">
                     <string>Distance</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
+                 <item row="1" column="1">
                   <widget class="QgsSpinBox" name="spinbox_distance">
                    <property name="minimum">
                     <number>5</number>
@@ -190,14 +173,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="0">
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_buckets">
                    <property name="text">
                     <string>Distance divisions</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="1">
+                 <item row="2" column="1">
                   <widget class="QgsSpinBox" name="spinbox_buckets">
                    <property name="minimum">
                     <number>1</number>
@@ -275,6 +258,46 @@
                        <string>Driving</string>
                       </property>
                      </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="groupbox_extra_options">
+                 <property name="title">
+                  <string>Extra options</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <layout class="QGridLayout" name="glayout_profile">
+                    <item row="0" column="0">
+                     <widget class="QCheckBox" name="checkbox_selected_only">
+                      <property name="text">
+                       <string>Use only selected points</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QCheckBox" name="checkbox_limit_to_polygon">
+                      <property name="text">
+                       <string>Limit areas to polygon boundaries</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                        <widget class="QgsMapLayerComboBox" name="combobox_polygon_layer"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QCheckBox" name="checkbox_combine_by_field">
+                      <property name="text">
+                       <string>Merge areas with same value in field</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                        <widget class="QgsFieldComboBox" name="combobox_layer_field"/>
                     </item>
                    </layout>
                   </item>

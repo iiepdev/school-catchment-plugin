@@ -35,8 +35,9 @@ def test_isochrone_layer_isochrone_created(
     assert isochrone_layer.featureCount() == 1
     assert isochrone_layer.geometryType() == QgsWkbTypes.PolygonGeometry
     for feature in isochrone_layer.getFeatures():
-        assert feature.attribute("original_fid") == 1
+        assert feature.attribute("original_fid") == "1"
         assert feature.attribute("name") == "school"
+        assert feature.attribute("extra_info") == "first_feature"
         assert feature.attribute("isochrone_distance") == 30
         if not boundary_layer:
             assert feature.attribute("boundary_fids") == ""
@@ -45,6 +46,34 @@ def test_isochrone_layer_isochrone_created(
                 [str(feature["fid"]) for feature in boundary_layer.getFeatures()]
             )
         assert len(feature.geometry().asMultiPolygon()) == part_count
+
+
+def test_isochrone_layer_isochrones_merged(
+    isochrone_opts, mock_fetch, point, another_point, two_point_layer
+):
+    mock_fetch(
+        [isochrone_opts.url + "/isochrone", isochrone_opts.url + "/isochrone"],
+        ["isochrones.json", "another_isochrone.json"],
+        required_params=[
+            {"point": f"{point.asPoint().y()},{point.asPoint().x()}"},
+            {"point": f"{another_point.asPoint().y()},{another_point.asPoint().x()}"},
+        ],
+    )
+    isochrone_opts.layer = two_point_layer
+    isochrone_opts.merge_by_field = two_point_layer.fields()[
+        two_point_layer.dataProvider().fieldNameMap()["name"]
+    ]
+    isochrone_layer = IsochroneCreator(isochrone_opts).create_isochrone_layer()
+    assert isochrone_layer.featureCount() == 1
+    assert isochrone_layer.geometryType() == QgsWkbTypes.PolygonGeometry
+    for feature in isochrone_layer.getFeatures():
+        assert feature.attribute("original_fid") == "1,2"
+        assert feature.attribute("name") == "school"
+        assert feature.attribute("isochrone_distance") == 30
+        assert feature.attribute("boundary_fids") == ""
+        # the two isochrones will merge to a polygon with two inner rings
+        assert len(feature.geometry().asMultiPolygon()) == 1
+        assert len(feature.geometry().asMultiPolygon()[0]) == 3
 
 
 def test_isochrone_layer_empty(isochrone_opts, mock_fetch):

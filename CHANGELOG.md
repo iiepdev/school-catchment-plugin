@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [0.3.0] - 2021-11-25
+
+### Added
+
+- Option to merge isochrones by field value, e.g. merging isochrones of multiple entrances of the same building
+
+### Changed
+
+- Isochrone original_fid field is now string (due to possible merging of isochrones)
+- UI checkboxes moved to separate Extra options field to indicate they are optional
+
 ## [0.2.0] - 2021-11-24
 
 ### Added

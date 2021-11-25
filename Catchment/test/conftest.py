@@ -3,8 +3,9 @@
 """
 This class contains fixtures and common helper function to keep the test files shorter
 """
+import json
 import os
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, List, Optional, Union
 
 import pytest
 from PyQt5.QtCore import QVariant
@@ -33,27 +34,54 @@ MOCK_URL = "http://mock.url"
 
 @pytest.fixture(scope="function")
 def mock_fetch(mocker, request) -> None:
-    """Makes fetch return JSON for a specified URL, exception otherwise.
-    Use by calling mock_fetch(desired_url, json_file_name, error_desired) in a test.
+    """Makes fetch return JSON(s) (and optional error(s)) for specified URL(s).
+    Use by calling mock_fetch(desired_url(s), json_file_name(s), error_desired, required_params(s)) in a test.
     """
 
     def _mock_fetch(
-        url: str,
-        json_to_return: str = "isochrones.json",
-        error: bool = False,
+        desired_url: Union[str, List[str]],
+        json_to_return: Union[str, List[str]] = "isochrones.json",
+        error: Union[bool, List[bool]] = False,
+        required_params: Union[
+            Optional[Dict[str, str]], List[Optional[Dict[str, str]]]
+        ] = None,
     ) -> Callable:
+        if isinstance(desired_url, str):
+            desired_url = [desired_url]
+        if isinstance(json_to_return, str):
+            json_to_return = len(desired_url) * [json_to_return]
+        if isinstance(error, bool):
+            error = len(desired_url) * [error]
+        if isinstance(required_params, dict) or not required_params:
+            required_params = len(desired_url) * [required_params]
+
         def mocked_fetch(
-            incoming_url: str,
+            url: str,
             params: Optional[Dict[str, str]] = None,
         ) -> str:
-            if incoming_url == url:
-                with open(
-                    os.path.join(request.fspath.dirname, "fixtures", json_to_return)
-                ) as f:
-                    # mock error if desired
-                    if error:
-                        raise QgsPluginNetworkException(f.read(), error=302)
-                    return f.read()
+            indices = [
+                idx
+                for idx, matching_url in enumerate(desired_url)
+                if url == matching_url
+            ]
+            # return first matching url+parameter combination
+            for index in indices:
+                # only check parameters if we require specific params
+                if not required_params[index] or all(
+                    [
+                        params.get(key, None) == required_params[index][key]
+                        for key in required_params[index].keys()
+                    ]
+                ):
+                    with open(
+                        os.path.join(
+                            request.fspath.dirname, "fixtures", json_to_return[index]
+                        )
+                    ) as f:
+                        # mock error if desired
+                        if error[index]:
+                            raise QgsPluginNetworkException(f.read(), error=302)
+                        return f.read()
             raise QgsPluginNetworkException(tr("Request failed"))
 
         mocker.patch("Catchment.core.isochrone_creator.fetch", new=mocked_fetch)
@@ -64,6 +92,11 @@ def mock_fetch(mocker, request) -> None:
 @pytest.fixture(scope="function")
 def point() -> None:
     yield QgsGeometry.fromPointXY(QgsPointXY(1.0, 1.0))
+
+
+@pytest.fixture(scope="function")
+def another_point() -> None:
+    yield QgsGeometry.fromPointXY(QgsPointXY(0.9, 0.9))
 
 
 @pytest.fixture(scope="function")
@@ -116,6 +149,7 @@ def fields() -> None:
     fields = QgsFields()
     fields.append(QgsField("fid", QVariant.Int))
     fields.append(QgsField("name", QVariant.String))
+    fields.append(QgsField("extra_info", QVariant.String))
     yield fields
 
 
@@ -125,6 +159,17 @@ def point_feature(fields, point) -> None:
     feature.setGeometry(point)
     feature.setAttribute("fid", 1)
     feature.setAttribute("name", "school")
+    feature.setAttribute("extra_info", "first_feature")
+    yield feature
+
+
+@pytest.fixture(scope="function")
+def another_point_feature(fields, another_point) -> None:
+    feature = QgsFeature(fields)
+    feature.setGeometry(another_point)
+    feature.setAttribute("fid", 2)
+    feature.setAttribute("name", "school")
+    feature.setAttribute("extra_info", "second_feature")
     yield feature
 
 
@@ -162,6 +207,18 @@ def point_layer(fields, point_feature) -> None:
     provider.addAttributes(fields)
     layer.updateFields()
     provider.addFeature(point_feature)
+    layer.updateExtents()
+    yield layer
+
+
+@pytest.fixture(scope="function")
+def two_point_layer(fields, point_feature, another_point_feature) -> None:
+    layer = QgsVectorLayer("Point?crs=epsg:4326&index=yes", "test_points", "memory")
+    provider = layer.dataProvider()
+    provider.addAttributes(fields)
+    layer.updateFields()
+    provider.addFeature(point_feature)
+    provider.addFeature(another_point_feature)
     layer.updateExtents()
     yield layer
 

@@ -2,6 +2,8 @@ import json
 import logging
 import os
 from dataclasses import dataclass
+from itertools import groupby
+from operator import itemgetter
 from typing import Dict, List, Optional
 
 import qgis.processing
@@ -42,6 +44,7 @@ class IsochroneOpts:
     layer: Optional[QgsVectorLayer] = None
     polygon_layer: Optional[QgsVectorLayer] = None
     selected_only: bool = False
+    merge_by_field: Optional[QgsField] = None
     distance: Optional[int] = None
     unit: Optional[Unit] = None
     buckets: int = 1
@@ -349,6 +352,55 @@ class IsochroneCreator(QgsTask):
                 break
             self.setProgress(100 * (idx / len(self.points)))
 
+    def __merge_isochrones_in_layer(self, layer: QgsVectorLayer) -> None:
+        field_name = self.opts.merge_by_field.name()
+        if field_name == "fid":
+            # group by original fid, just in case it is not unique for some reason
+            field_name = "original_fid"
+        TASK_LOGGER.info(f"Merging isochrones by {field_name} value...")
+        # merge isochrones with same field value *and* same distance
+        merge_criterion = itemgetter(
+            layer.dataProvider().fieldNameIndex(field_name),
+            layer.dataProvider().fieldNameIndex("isochrone_distance"),
+        )
+        sorted_features = sorted(layer.getFeatures(), key=merge_criterion)
+        grouped_features = groupby(sorted_features, key=merge_criterion)
+        merged_features = []
+        for group in grouped_features:
+            merged_feature = QgsFeature(layer.fields())
+            merged_geometry = None
+            merged_ids = set()
+            merged_boundary_ids = set()
+            for feature in group[1]:
+                if not merged_geometry:
+                    merged_geometry = feature.geometry()
+                else:
+                    merged_geometry = merged_geometry.combine(feature.geometry())
+                    # now, the result may be polygon *or* multipolygon
+                    if merged_geometry.asPolygon():
+                        merged_geometry = QgsGeometry.fromMultiPolygonXY(
+                            [merged_geometry.asPolygon()]
+                        )
+                merged_ids.add(feature["original_fid"])
+                # boundary fids may be the same, only save different boundary ids
+                merged_boundary_ids.update(feature["boundary_fids"].split(","))
+
+            field_value = group[0][0]
+            distance_value = group[0][1]
+            # finally, sort the ids
+            merged_ids = sorted(list(merged_ids))
+            merged_boundary_ids = sorted(list(merged_boundary_ids))
+            merged_feature.setAttribute("original_fid", ",".join(merged_ids))
+            merged_feature.setAttribute(field_name, field_value)
+            merged_feature.setAttribute("isochrone_distance", distance_value)
+            merged_feature.setAttribute("boundary_fids", ",".join(merged_boundary_ids))
+            merged_feature.setGeometry(merged_geometry)
+            merged_features.append(merged_feature)
+
+        # empty the layer and add new features
+        layer.dataProvider().truncate()
+        layer.dataProvider().addFeatures(merged_features)
+
     def create_isochrone_layer(self) -> QgsVectorLayer:
         """Creates a polygon QgsVectorLayer containing isochrones for points"""
         isochrone_layer = QgsVectorLayer(
@@ -356,9 +408,28 @@ class IsochroneCreator(QgsTask):
         )
 
         # add all the required fields to the new layer
-        fields = QgsFields(self.opts.layer.fields())  # type: ignore
-        # save original feature id separate from new feature id
-        fields.rename(0, "original_fid")
+        fields = QgsFields()
+        # save original fid(s) as string to support multiple point ids
+        original_fid_field = QgsField(
+            name="original_fid", type=QVariant.String, typeName="varchar"
+        )
+        fields.append(original_fid_field)
+
+        if self.opts.merge_by_field:
+            # If isochrones are merged, they will lose all their attributes
+            # other than the one that is used to merge
+            fields.append(self.opts.merge_by_field)
+        else:
+            # We must make a copy of original fields, then edit it, then iterate it
+            # to get the desired final field ordering. Yeah, fields can only be
+            # added to the end, go figure.
+            original_fields = QgsFields(self.opts.layer.fields())  # type: ignore
+            # remove the fid field
+            original_fields.remove(0)
+            for field in original_fields:
+                fields.append(field)
+
+        # add our extra fields last
         distance_field = QgsField(
             name="isochrone_distance", type=QVariant.Double, typeName="double"
         )
@@ -372,6 +443,8 @@ class IsochroneCreator(QgsTask):
         isochrone_layer.updateFields()
 
         self.__add_isochrones_to_layer(isochrone_layer)
+        if self.opts.merge_by_field:
+            self.__merge_isochrones_in_layer(isochrone_layer)
         # update layer's extent when new features have been added
         isochrone_layer.updateExtents()
 

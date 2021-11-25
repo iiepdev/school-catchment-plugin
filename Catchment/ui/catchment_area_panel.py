@@ -27,7 +27,9 @@ class CatchmentAreaPanel(BasePanel):
         self.dlg.combobox_layer.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.dlg.combobox_polygon_layer.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.dlg.combobox_polygon_layer.setEnabled(False)
+        self.dlg.combobox_layer_field.setEnabled(False)
         self.__update_duration_label()
+        self.__update_field_selector()
 
         # connect the signals, since pyqt slot decorator cannot be used
         self.dlg.radiobtn_mins.clicked.connect(self.on_radiobtn_mins_clicked)
@@ -46,6 +48,9 @@ class CatchmentAreaPanel(BasePanel):
         )
         self.dlg.checkbox_limit_to_polygon.clicked.connect(
             self.on_checkbox_limit_to_polygon_clicked
+        )
+        self.dlg.checkbox_combine_by_field.clicked.connect(
+            self.on_checkbox_combine_by_field_clicked
         )
         self.dlg.spinbox_distance.valueChanged.connect(
             self.on_spinbox_distance_valueChanged
@@ -116,6 +121,7 @@ class CatchmentAreaPanel(BasePanel):
 
     def on_combobox_layer_layerChanged(self) -> None:  # noqa
         self.__update_duration_label()
+        self.__update_field_selector()
 
     def on_combobox_polygon_layer_layerChanged(self) -> None:  # noqa
         pass
@@ -126,6 +132,11 @@ class CatchmentAreaPanel(BasePanel):
     def on_checkbox_limit_to_polygon_clicked(self) -> None:
         self.dlg.combobox_polygon_layer.setEnabled(
             not self.dlg.combobox_polygon_layer.isEnabled()
+        )
+
+    def on_checkbox_combine_by_field_clicked(self) -> None:
+        self.dlg.combobox_layer_field.setEnabled(
+            not self.dlg.combobox_layer_field.isEnabled()
         )
 
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
@@ -175,3 +186,7 @@ class CatchmentAreaPanel(BasePanel):
                 "settings may take several hours or days."
             )
             self.dlg.duration_label.setStyleSheet("color: red")
+
+    def __update_field_selector(self) -> None:
+        opts = self.dlg.read_isochrone_options()
+        self.dlg.combobox_layer_field.setLayer(opts.layer)
