@@ -74,7 +74,13 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         )
         opts.selected_only = self.checkbox_selected_only.isChecked()
         opts.merge_by_field = (
-            self.combobox_layer_field.currentField()
+            # While the QgsLayerCombobox returns layer directly, the
+            # QgsFieldCombobox only returns field *name*. Go figure
+            opts.layer.fields()[
+                opts.layer.fields().indexFromName(
+                    self.combobox_layer_field.currentField()
+                )
+            ]
             if self.checkbox_combine_by_field.isChecked()
             else None
         )

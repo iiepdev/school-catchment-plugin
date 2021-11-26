@@ -184,9 +184,14 @@ class IsochroneCreator(QgsTask):
             if self.opts.polygon_layer
             else ""
         )
+        merged_string = (
+            f" combined by {self.opts.merge_by_field.name()}"
+            if self.opts.merge_by_field
+            else ""
+        )
         self.name = (
             f"{self.opts.distance} {self.opts.unit.value} {direction_string}"
-            f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}"  # type: ignore  # noqa
+            f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}{merged_string}"  # type: ignore  # noqa
         )
 
         super().__init__(description=f"Fetching GraphHopper isochrones: {self.name}")
