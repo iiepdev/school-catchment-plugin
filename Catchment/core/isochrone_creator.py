@@ -63,6 +63,7 @@ class IsochroneOpts:
 class IsochroneCreator(QgsTask):
     def __init__(self, opts: IsochroneOpts) -> None:
         self.opts = opts
+        self.error: Optional[Exception] = None
         self.result_layer: Optional[QgsVectorLayer] = None
         self.points: list[QgsFeature] = []
         self.limiting_polygons: list[QgsFeature] = []
@@ -209,11 +210,11 @@ class IsochroneCreator(QgsTask):
         """
         try:
             self.result_layer = self.create_isochrone_layer()
-        except QgsPluginNetworkException as e:
-            TASK_LOGGER.error(
-                f"Network request failed, aborting run. Error: {e.message}"  # noqa
-            )
+        except Exception as e:
+            TASK_LOGGER.error(f"Isochrone task failed, aborting run: {repr(e)}")  # noqa
+            self.error = e
             return False
+
         count = self.result_layer.featureCount()
         TASK_LOGGER.info(f"Total of {count} isochrones generated.")
         TASK_LOGGER.info(
@@ -234,13 +235,19 @@ class IsochroneCreator(QgsTask):
         result is the return value from self.run.
         """
         if not result:
-            if not self.result_layer:
-                MAIN_LOGGER.error(
-                    f"Graphhopper request to {self.base_url} failed",
-                    extra={
-                        "details": "Please check your Graphhopper url and your Internet connection."  # noqa
-                    },
-                )
+            if self.error:
+                if isinstance(self.error, QgsPluginNetworkException):
+                    MAIN_LOGGER.error(
+                        f"Graphhopper request to {self.base_url} failed",
+                        extra={
+                            "details": "Please check your Graphhopper url and your Internet connection."  # noqa
+                        },
+                    )
+                else:
+                    MAIN_LOGGER.error(
+                        "Isochrone task failed and returned exception",
+                        extra={"details": repr(self.error)},
+                    )
             elif len(self.points):
                 MAIN_LOGGER.error(
                     "No results, no roads found close to any of the points",
