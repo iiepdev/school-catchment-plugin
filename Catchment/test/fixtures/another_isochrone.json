@@ -1,0 +1,44 @@
+{
+    "polygons": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -1.0,
+                            -1.0
+                        ],
+                        [
+                            3.0,
+                            -1.0
+                        ],
+                        [
+                            3.0,
+                            0.0
+                        ],
+                        [
+                            -1.0,
+                            0.0
+                        ],
+                        [
+                            -1.0,
+                            -1.0
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "bucket": 0
+            }
+        }
+    ],
+    "info": {
+        "copyrights": [
+            "GraphHopper",
+            "OpenStreetMap contributors"
+        ],
+        "took": 0
+    }
+}
