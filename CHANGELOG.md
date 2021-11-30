@@ -1,6 +1,12 @@
 # CHANGELOG
 
-## [0.3.0] - 2021-11-25
+## 0.3.1 - 2021-11-30
+### Changed
+
+- Fix bug merging isochrones for layers with several attribute fields
+- Fix bug when merged isochrones are multipolygons
+
+## 0.3.0 - 2021-11-25
 
 ### Added
 
@@ -11,13 +17,13 @@
 - Isochrone original_fid field is now string (due to possible merging of isochrones)
 - UI checkboxes moved to separate Extra options field to indicate they are optional
 
-## [0.2.1] - 2021-11-24
+## 0.2.1 - 2021-11-24
 
 ### Changed
 
 - Fixes to release workflow
 
-## [0.2.0] - 2021-11-24
+## 0.2.0 - 2021-11-24
 
 ### Added
 
@@ -28,6 +34,6 @@
 - Updated test and development dependencies
 - Isochrones are now multipolygons (due to boundary intersections) instead of simple polygons
 
-## [0.1.0] - 2021-06-11
+## 0.1.0 - 2021-06-11
 
 - First official version published

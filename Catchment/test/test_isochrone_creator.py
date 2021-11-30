@@ -61,14 +61,14 @@ def test_isochrone_layer_isochrones_merged(
     )
     isochrone_opts.layer = two_point_layer
     isochrone_opts.merge_by_field = two_point_layer.fields()[
-        two_point_layer.dataProvider().fieldNameMap()["name"]
+        two_point_layer.dataProvider().fieldNameMap()["extra_field_1"]
     ]
     isochrone_layer = IsochroneCreator(isochrone_opts).create_isochrone_layer()
     assert isochrone_layer.featureCount() == 1
     assert isochrone_layer.geometryType() == QgsWkbTypes.PolygonGeometry
     for feature in isochrone_layer.getFeatures():
         assert feature.attribute("original_fid") == "1,2"
-        assert feature.attribute("name") == "school"
+        assert feature.attribute("extra_field_1") == 2
         assert feature.attribute("isochrone_distance") == 30
         assert feature.attribute("boundary_fids") == ""
         # the two isochrones will merge to a polygon with two inner rings

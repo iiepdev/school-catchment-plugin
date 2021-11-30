@@ -307,9 +307,16 @@ class IsochroneCreator(QgsTask):
             bucketed_isochrones = self.__fetch_bucketed_isochrones(point)
             for polygon_in_bucket in bucketed_isochrones:
                 feature = QgsFeature(layer.fields())
-                # save the original feature id separately
+                # when merging, we have to discard extra attributes
+                if self.opts.merge_by_field:
+                    attributes = [
+                        point.id(),
+                        point.attribute(self.opts.merge_by_field.name()),
+                    ]
+                else:
+                    attributes = point.attributes()
                 # setAttributes cannot be used, will destroy any extra fields!!
-                for index, attribute in enumerate(point.attributes()):
+                for index, attribute in enumerate(attributes):
                     feature.setAttribute(index, attribute)
                 # set the added distance field separately
                 bucket = polygon_in_bucket["properties"]["bucket"]
@@ -389,7 +396,7 @@ class IsochroneCreator(QgsTask):
                 else:
                     merged_geometry = merged_geometry.combine(feature.geometry())
                     # now, the result may be polygon *or* multipolygon
-                    if merged_geometry.asPolygon():
+                    if merged_geometry.wkbType() == QgsWkbTypes.Polygon:
                         merged_geometry = QgsGeometry.fromMultiPolygonXY(
                             [merged_geometry.asPolygon()]
                         )

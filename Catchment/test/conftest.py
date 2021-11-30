@@ -150,6 +150,8 @@ def fields() -> None:
     fields.append(QgsField("fid", QVariant.Int))
     fields.append(QgsField("name", QVariant.String))
     fields.append(QgsField("extra_info", QVariant.String))
+    fields.append(QgsField("extra_field_1", QVariant.Int))
+    fields.append(QgsField("extra_field_2", QVariant.Int))
     yield fields
 
 
@@ -160,6 +162,8 @@ def point_feature(fields, point) -> None:
     feature.setAttribute("fid", 1)
     feature.setAttribute("name", "school")
     feature.setAttribute("extra_info", "first_feature")
+    feature.setAttribute("extra_field_1", 2)
+    feature.setAttribute("extra_field_2", 3)
     yield feature
 
 
@@ -170,6 +174,8 @@ def another_point_feature(fields, another_point) -> None:
     feature.setAttribute("fid", 2)
     feature.setAttribute("name", "school")
     feature.setAttribute("extra_info", "second_feature")
+    feature.setAttribute("extra_field_1", 2)
+    feature.setAttribute("extra_field_2", 4)
     yield feature
 
 
