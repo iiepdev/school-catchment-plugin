@@ -84,6 +84,17 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             if self.checkbox_combine_by_field.isChecked()
             else None
         )
+        opts.add_walking_field = (
+            # While the QgsLayerCombobox returns layer directly, the
+            # QgsFieldCombobox only returns field *name*. Go figure
+            opts.layer.fields()[
+                opts.layer.fields().indexFromName(
+                    self.combobox_add_walking_field.currentField()
+                )
+            ]
+            if self.checkbox_add_walking.isChecked()
+            else None
+        )
         opts.distance = self.spinbox_distance.value()
         opts.buckets = self.spinbox_buckets.value()
 

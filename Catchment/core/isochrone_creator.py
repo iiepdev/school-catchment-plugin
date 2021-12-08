@@ -45,6 +45,7 @@ class IsochroneOpts:
     polygon_layer: Optional[QgsVectorLayer] = None
     selected_only: bool = False
     merge_by_field: Optional[QgsField] = None
+    add_walking_field: Optional[QgsField] = None
     distance: Optional[int] = None
     unit: Optional[Unit] = None
     buckets: int = 1
@@ -190,8 +191,11 @@ class IsochroneCreator(QgsTask):
             if self.opts.merge_by_field
             else ""
         )
+        walking_string = (
+            "with added walking distance " if self.opts.add_walking_field else ""
+        )
         self.name = (
-            f"{self.opts.distance} {self.opts.unit.value} {direction_string}"
+            f"{self.opts.distance} {self.opts.unit.value} {walking_string}{direction_string}"  # type: ignore  # noqa
             f" {selected_string}{self.opts.layer.name()}{profile_string}{limited_string}{merged_string}"  # type: ignore  # noqa
         )
 
@@ -267,14 +271,50 @@ class IsochroneCreator(QgsTask):
             root = QgsProject.instance().layerTreeRoot()
             root.insertChildNode(1, QgsLayerTreeLayer(self.result_layer))
 
-    def __fetch_bucketed_isochrones(self, point: QgsFeature) -> List[Dict]:
+    def __add_walking_distance(
+        self, isochrone_params: Dict, walking_distance: int
+    ) -> Dict:
+        # Each point may have fixed internal walking distance in meters that has to
+        # be traversed before reaching the entrance, i.e. the Graphhopper network.
+        # This is taken into account to determine the distance to fetch. Note that
+        # this will result in very ugly bucket divisions, so this is best used without
+        # buckets.
+        if not walking_distance:
+            return isochrone_params
+        if self.opts.unit == Unit.METERS:
+            distance = isochrone_params["distance_limit"] - walking_distance
+            if distance < 0:
+                distance = 0
+            TASK_LOGGER.info(
+                f"Added walking distance {walking_distance} m. Fetching isochrone"
+                f" for distance {distance} m."
+            )
+            return {**isochrone_params, "distance_limit": distance}
+        elif self.opts.unit == Unit.MINUTES:
+            # distance in seconds, walking distance in meters, walking speed 5 km/h
+            time = int(
+                isochrone_params["time_limit"] - walking_distance / (5000 / 3600)
+            )
+            if time < 0:
+                time = 0
+            TASK_LOGGER.info(
+                f"Added walking time corresponding to {walking_distance} m. Fetching"
+                f" isochrone for time {time} s."
+            )
+            return {**isochrone_params, "time_limit": time}
+
+    def __fetch_bucketed_isochrones(self, point_feature: QgsFeature) -> List[Dict]:
         # the API may return multiple isochrones for a single point (buckets)
-        geometry = point.geometry()
+        geometry = point_feature.geometry()
         isochrones = []
         # the geometry may be multipoint, handle each point
         for point in geometry.parts():
             isochrone_params = self.params
             isochrone_params["point"] = f"{point.y()},{point.x()}"
+            if self.opts.add_walking_field:
+                isochrone_params = self.__add_walking_distance(
+                    isochrone_params, point_feature[self.opts.add_walking_field.name()]
+                )
             try:
                 isochrone_json = fetch(self.base_url, params=isochrone_params)
             except QgsPluginNetworkException as e:

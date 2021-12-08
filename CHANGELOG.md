@@ -1,4 +1,9 @@
 # CHANGELOG
+## 0.4.0 - 2021-12-08
+
+### Added
+
+- Option to subtract indoor walking distance per point before calculating point isochrone
 
 ## 0.3.1 - 2021-11-30
 ### Changed

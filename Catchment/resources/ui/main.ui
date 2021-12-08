@@ -112,13 +112,13 @@
          <x>0</x>
          <y>0</y>
          <width>500</width>
-         <height>550</height>
+         <height>580</height>
         </rect>
        </property>
        <property name="minimumSize">
         <size>
          <width>500</width>
-         <height>550</height>
+         <height>580</height>
         </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -186,7 +186,7 @@
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>8</number>
+                    <number>16</number>
                    </property>
                    <property name="singleStep">
                     <number>1</number>
@@ -298,6 +298,16 @@
                     </item>
                     <item row="2" column="1">
                         <widget class="QgsFieldComboBox" name="combobox_layer_field"/>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QCheckBox" name="checkbox_add_walking">
+                      <property name="text">
+                       <string>Add indoor walking distances</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                        <widget class="QgsFieldComboBox" name="combobox_add_walking_field"/>
                     </item>
                    </layout>
                   </item>

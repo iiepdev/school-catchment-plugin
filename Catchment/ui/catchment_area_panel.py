@@ -2,7 +2,7 @@ import logging
 from math import floor, pow
 from typing import Optional
 
-from qgis.core import QgsMapLayerProxyModel
+from qgis.core import QgsFieldProxyModel, QgsMapLayerProxyModel
 from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.constants import Profile, Unit
@@ -28,8 +28,10 @@ class CatchmentAreaPanel(BasePanel):
         self.dlg.combobox_polygon_layer.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.dlg.combobox_polygon_layer.setEnabled(False)
         self.dlg.combobox_layer_field.setEnabled(False)
+        self.dlg.combobox_add_walking_field.setFilters(QgsFieldProxyModel.Int)
+        self.dlg.combobox_add_walking_field.setEnabled(False)
         self.__update_duration_label()
-        self.__update_field_selector()
+        self.__update_field_selectors()
 
         # connect the signals, since pyqt slot decorator cannot be used
         self.dlg.radiobtn_mins.clicked.connect(self.on_radiobtn_mins_clicked)
@@ -51,6 +53,9 @@ class CatchmentAreaPanel(BasePanel):
         )
         self.dlg.checkbox_combine_by_field.clicked.connect(
             self.on_checkbox_combine_by_field_clicked
+        )
+        self.dlg.checkbox_add_walking.clicked.connect(
+            self.on_checkbox_add_walking_clicked
         )
         self.dlg.spinbox_distance.valueChanged.connect(
             self.on_spinbox_distance_valueChanged
@@ -80,7 +85,7 @@ class CatchmentAreaPanel(BasePanel):
                 # assuming walking speed 5 km/h = 83.3 m/min
                 distance_in_minutes_by_foot = opts.distance / 83.3  # type: ignore
             elif opts.profile == Profile.CYCLING:
-                # assuming biking speed 25 km/h
+                # the biking speed varies greatly, assume average of 15
                 distance_in_minutes_by_foot = 3 * distance_in_minutes_by_foot  # type: ignore  # noqa
             elif opts.profile == Profile.DRIVING:
                 # assuming driving speed 50 km/h
@@ -121,7 +126,7 @@ class CatchmentAreaPanel(BasePanel):
 
     def on_combobox_layer_layerChanged(self) -> None:  # noqa
         self.__update_duration_label()
-        self.__update_field_selector()
+        self.__update_field_selectors()
 
     def on_combobox_polygon_layer_layerChanged(self) -> None:  # noqa
         pass
@@ -139,6 +144,11 @@ class CatchmentAreaPanel(BasePanel):
             not self.dlg.combobox_layer_field.isEnabled()
         )
 
+    def on_checkbox_add_walking_clicked(self) -> None:
+        self.dlg.combobox_add_walking_field.setEnabled(
+            not self.dlg.combobox_add_walking_field.isEnabled()
+        )
+
     def on_spinbox_distance_valueChanged(self) -> None:  # noqa
         self.__update_duration_label()
 
@@ -154,8 +164,8 @@ class CatchmentAreaPanel(BasePanel):
             max_ = 120
             default = 30
         elif selected_unit == Unit.METERS:
-            step = 500
-            min_ = 500
+            step = 200
+            min_ = 200
             max_ = 10000
             default = 2000
 
@@ -187,6 +197,7 @@ class CatchmentAreaPanel(BasePanel):
             )
             self.dlg.duration_label.setStyleSheet("color: red")
 
-    def __update_field_selector(self) -> None:
+    def __update_field_selectors(self) -> None:
         opts = self.dlg.read_isochrone_options()
         self.dlg.combobox_layer_field.setLayer(opts.layer)
+        self.dlg.combobox_add_walking_field.setLayer(opts.layer)
