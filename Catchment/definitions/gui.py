@@ -1,8 +1,8 @@
 """Definitions for GUI concepts."""
 import enum
 
-from PyQt5.QtGui import QIcon
 from qgis.core import QgsApplication
+from qgis.PyQt.QtGui import QIcon
 
 from ..qgis_plugin_tools.tools.resources import resources_path
 

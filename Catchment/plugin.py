@@ -1,9 +1,9 @@
 from typing import Callable, List, Optional
 
-from PyQt5.QtCore import QCoreApplication, QTranslator
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QWidget
 from qgis.gui import QgisInterface
+from qgis.PyQt.QtCore import QCoreApplication, QTranslator
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QWidget
 
 from .core.isochrone_creator import IsochroneCreator
 from .qgis_plugin_tools.tools.custom_logging import (
@@ -20,7 +20,7 @@ from .ui.maindialog import MainDialog
 class Plugin:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface: QgisInterface) -> None:
+    def __init__(self, iface: QgisInterface) -> None:  # noqa
 
         self.iface = iface
         # store the task here so it survives garbage collection after run method returns

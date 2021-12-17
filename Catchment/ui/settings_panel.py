@@ -1,8 +1,8 @@
 import logging
 import webbrowser
 
-from PyQt5.QtWidgets import QDialog
 from qgis.gui import QgsFileWidget
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.custom_logging import (

@@ -1,13 +1,13 @@
 import logging
 
-from PyQt5.QtWidgets import (
+from qgis.core import QgsApplication
+from qgis.PyQt.QtWidgets import (
     QDesktopWidget,
     QDialog,
     QDialogButtonBox,
     QRadioButton,
     QWidget,
 )
-from qgis.core import QgsApplication
 
 from ..core.isochrone_creator import IsochroneCreator, IsochroneOpts
 from ..definitions.constants import Profile, Unit
@@ -67,7 +67,34 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         opts.write_to_directory = self.checkbox_file.isChecked()
         opts.directory = self.file_widget.filePath()
         opts.layer = self.combobox_layer.currentLayer()
+        opts.polygon_layer = (
+            self.combobox_polygon_layer.currentLayer()
+            if self.checkbox_limit_to_polygon.isChecked()
+            else None
+        )
         opts.selected_only = self.checkbox_selected_only.isChecked()
+        opts.merge_by_field = (
+            # While the QgsLayerCombobox returns layer directly, the
+            # QgsFieldCombobox only returns field *name*. Go figure
+            opts.layer.fields()[
+                opts.layer.fields().indexFromName(
+                    self.combobox_layer_field.currentField()
+                )
+            ]
+            if self.checkbox_combine_by_field.isChecked()
+            else None
+        )
+        opts.add_walking_field = (
+            # While the QgsLayerCombobox returns layer directly, the
+            # QgsFieldCombobox only returns field *name*. Go figure
+            opts.layer.fields()[
+                opts.layer.fields().indexFromName(
+                    self.combobox_add_walking_field.currentField()
+                )
+            ]
+            if self.checkbox_add_walking.isChecked()
+            else None
+        )
         opts.distance = self.spinbox_distance.value()
         opts.buckets = self.spinbox_buckets.value()
 
@@ -84,7 +111,6 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
             opts.profile = Profile.CYCLING
         elif profile == "radiobtn_driving":
             opts.profile = Profile.DRIVING
-        print(opts)
         return opts
 
     def _set_window_location(self) -> None:
@@ -92,8 +118,8 @@ class MainDialog(QDialog, FORM_CLASS):  # type: ignore
         sg = QDesktopWidget().screenGeometry()
 
         widget = self.geometry()
-        x = (ag.width() - widget.width()) / 1.5
-        y = 2 * ag.height() - sg.height() - 1.2 * widget.height()
+        x = int((ag.width() - widget.width()) / 1.5)
+        y = int(2 * ag.height() - sg.height() - 1.2 * widget.height())
         self.move(x, y)
 
     @staticmethod
