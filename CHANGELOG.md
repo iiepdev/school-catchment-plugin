@@ -1,4 +1,11 @@
 # CHANGELOG
+## 0.4.1 - 2021-12-08
+
+### Changed
+
+- Fix bug that made links in About panel non-clickable
+- Decrease time and distance increments to allow calculating 100 meter and 1 minute intervals
+
 ## 0.4.0 - 2021-12-08
 
 ### Added

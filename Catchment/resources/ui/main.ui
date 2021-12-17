@@ -157,13 +157,13 @@
                  <item row="1" column="1">
                   <widget class="QgsSpinBox" name="spinbox_distance">
                    <property name="minimum">
-                    <number>5</number>
+                    <number>1</number>
                    </property>
                    <property name="maximum">
                     <number>120</number>
                    </property>
                    <property name="singleStep">
-                    <number>5</number>
+                    <number>1</number>
                    </property>
                    <property name="value">
                     <number>30</number>
@@ -505,8 +505,11 @@
                  <item row="0" column="1">
                   <widget class="QLabel" name="label_gispo">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.gispo.fi/en/home/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Gispo Ltd.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://www.iiep.unesco.org/geo&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;IIEP-UNESCO&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;https://www.gispo.fi/en/home/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Gispo Ltd.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -536,6 +539,9 @@
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/graphhopper/graphhopper&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/graphhopper/graphhopper&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
                    </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -548,8 +554,11 @@
                  <item row="1" column="1">
                   <widget class="QLabel" name="label_source">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/catchment-plugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/catchment-plugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/school-catchment-plugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/catchment-plugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -606,6 +615,9 @@
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Apache License 2.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
                    </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -620,6 +632,9 @@
                    <property name="text">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.en.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;GNU General Public License v3.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>

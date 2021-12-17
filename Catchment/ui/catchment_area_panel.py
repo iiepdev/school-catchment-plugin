@@ -159,13 +159,13 @@ class CatchmentAreaPanel(BasePanel):
         """Sets unit spinbox min, max, and step values
         based on currently selected unit"""
         if selected_unit == Unit.MINUTES:
-            step = 5
-            min_ = 5
+            step = 1
+            min_ = 1
             max_ = 120
             default = 30
         elif selected_unit == Unit.METERS:
-            step = 200
-            min_ = 200
+            step = 100
+            min_ = 100
             max_ = 10000
             default = 2000
 
