@@ -1,4 +1,11 @@
 # CHANGELOG
+## 0.4.2 - 2021-10-31
+
+### Changed
+
+- IIEP logo added
+- Test runners updated to latest versions and fixed
+
 ## 0.4.1 - 2021-12-17
 
 ### Changed
