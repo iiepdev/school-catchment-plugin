@@ -59,7 +59,7 @@ jobs:
       - name: Run tests
         shell: pwsh
         run: |
-          $env:PATH="C:\Program Files\QGIS 3.16\bin;$env:PATH"
+          $env:PATH="C:\Program Files\QGIS 3.22.11\bin;$env:PATH"
           $env:QGIS_PLUGIN_IN_CI=1
           python-qgis-ltr.bat -m pip install -q -r requirements-test.txt
           python-qgis-ltr.bat -m pytest -v Catchment/test
