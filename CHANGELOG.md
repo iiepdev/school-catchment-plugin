@@ -1,4 +1,10 @@
 # CHANGELOG
+## 0.4.3 - 2021-11-01
+
+### Changed
+
+- Changed IIEP logo to correct size
+
 ## 0.4.2 - 2021-10-31
 
 ### Changed
