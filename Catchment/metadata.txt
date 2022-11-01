@@ -1,7 +1,7 @@
 [general]
 name=Catchment
 description=Calculate point catchment areas (isochrones) using Graphhopper on OpenStreetMap roads, e.g. for educational planning.
-version=0.4.2
+version=0.4.3
 about=This is a plugin to calculate travel time to a point (e.g. school), from any polygon, to better understand patterns of access and improve educational planning.
  
  The plugin is using Graphhopper on OpenStreetMap roads, and requires access to a Graphhopper API (https://www.graphhopper.com), or your own Graphhopper deployment (e.g. https://github.com/GispoCoding/graphhopper-docker).
