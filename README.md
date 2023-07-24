@@ -24,6 +24,10 @@ This material has been partly funded by UK aid from the UK government; however i
 
 ---
 
+### Install the plugin
+
+To install the Catchment Plugin, simply open the Plugin Manager (`Plugins > Manage and Install Plugins...`), search for Catchment and click Install Plugin. The Plugin will then appear in Plugins toolbar.
+
 ### How to get started
 
 Currently, the plugin calculates catchment areas (isochrones) for a specified layer of schools with a selected mode of transport (walking/hiking, cycling, driving) and a selected distance in metres or duration in minutes (e.g. 1500 metres, 30 minutes of transit).
@@ -46,7 +50,7 @@ See the [graphhopper-docker repository](https://github.com/GispoCoding/graphhopp
 
 ![Settings panel](imgs/settings.png)
 
-1. Once you know your Graphhopper address, start the plugin and select the Settings tab. Fill in the address in Graphhopper URL field.
+1. Once you know your Graphhopper address, start the plugin and select the Settings tab. Fill in the address in Graphhopper URL field. If you are running GraphHopper using Docker (see instructions above), the default address is http://localhost:8989/.
 2. If your Graphhopper subscription requires an API key, fill in the API key field.
 3. If you wish to save the result layers automatically, select the checkbox and pick the directory you want to save the results into. Otherwise, the layer stays only in memory.
 
