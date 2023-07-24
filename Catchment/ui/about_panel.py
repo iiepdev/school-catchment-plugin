@@ -1,6 +1,6 @@
 import logging
 
-from PyQt5.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.i18n import tr
@@ -18,5 +18,5 @@ class AboutPanel(BasePanel):
 
     def setup_panel(self) -> None:
         v = version()
-        LOGGER.info(tr(u"Plugin version is {}", v))
+        LOGGER.info(tr("Plugin version is {}", v))
         self.dlg.label_version.setText(v)

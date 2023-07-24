@@ -1,7 +1,7 @@
 """Panel core base class."""
 from typing import Dict, Optional
 
-from PyQt5.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..definitions.gui import Panels
 from ..qgis_plugin_tools.tools.exceptions import QgsPluginNotImplementedException

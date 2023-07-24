@@ -112,13 +112,13 @@
          <x>0</x>
          <y>0</y>
          <width>500</width>
-         <height>450</height>
+         <height>580</height>
         </rect>
        </property>
        <property name="minimumSize">
         <size>
          <width>500</width>
-         <height>450</height>
+         <height>580</height>
         </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -147,30 +147,23 @@
                  <item row="0" column="1">
                   <widget class="QgsMapLayerComboBox" name="combobox_layer"/>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QCheckBox" name="checkbox_selected_only">
-                   <property name="text">
-                    <string>Use only selected features</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
+                 <item row="1" column="0">
                   <widget class="QLabel" name="label_distance">
                    <property name="text">
                     <string>Distance</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
+                 <item row="1" column="1">
                   <widget class="QgsSpinBox" name="spinbox_distance">
                    <property name="minimum">
-                    <number>5</number>
+                    <number>1</number>
                    </property>
                    <property name="maximum">
                     <number>120</number>
                    </property>
                    <property name="singleStep">
-                    <number>5</number>
+                    <number>1</number>
                    </property>
                    <property name="value">
                     <number>30</number>
@@ -180,20 +173,20 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_buckets">
                    <property name="text">
                     <string>Distance divisions</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item row="2" column="1">
                   <widget class="QgsSpinBox" name="spinbox_buckets">
                    <property name="minimum">
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>8</number>
+                    <number>16</number>
                    </property>
                    <property name="singleStep">
                     <number>1</number>
@@ -265,6 +258,56 @@
                        <string>Driving</string>
                       </property>
                      </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="groupbox_extra_options">
+                 <property name="title">
+                  <string>Extra options</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <layout class="QGridLayout" name="glayout_profile">
+                    <item row="0" column="0">
+                     <widget class="QCheckBox" name="checkbox_selected_only">
+                      <property name="text">
+                       <string>Use only selected points</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QCheckBox" name="checkbox_limit_to_polygon">
+                      <property name="text">
+                       <string>Limit areas to polygon boundaries</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                        <widget class="QgsMapLayerComboBox" name="combobox_polygon_layer"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QCheckBox" name="checkbox_combine_by_field">
+                      <property name="text">
+                       <string>Merge areas with same value in field</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                        <widget class="QgsFieldComboBox" name="combobox_layer_field"/>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QCheckBox" name="checkbox_add_walking">
+                      <property name="text">
+                       <string>Add indoor walking distances</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                        <widget class="QgsFieldComboBox" name="combobox_add_walking_field"/>
                     </item>
                    </layout>
                   </item>
@@ -462,8 +505,11 @@
                  <item row="0" column="1">
                   <widget class="QLabel" name="label_gispo">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.gispo.fi/en/home/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Gispo Ltd.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://www.iiep.unesco.org/geo&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;IIEP-UNESCO&lt;/span&gt;&lt;/a&gt; and &lt;a href=&quot;https://www.gispo.fi/en/home/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Gispo Ltd.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -493,6 +539,9 @@
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/graphhopper/graphhopper&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/graphhopper/graphhopper&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
                    </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -505,8 +554,11 @@
                  <item row="1" column="1">
                   <widget class="QLabel" name="label_source">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/catchment-plugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/catchment-plugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/GispoCoding/school-catchment-plugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/GispoCoding/catchment-plugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -563,6 +615,9 @@
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Apache License 2.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
                    </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -577,6 +632,9 @@
                    <property name="text">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.en.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;GNU General Public License v3.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -631,6 +689,11 @@
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
    <header>qgsmaplayercombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>QgsSpinBox</class>

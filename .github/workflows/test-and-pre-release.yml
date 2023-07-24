@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         # Remove unsupported versions and add more versions. Use LTR version in the cov_tests job
-        docker_tags: [release-3_16, latest]
+        docker_tags: [release-3_16, final-3_22_9, latest]
       fail-fast: false
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -31,7 +31,7 @@ jobs:
 
       # Runs all tests
       - name: Run tests
-        run: docker run --rm --net=host --volume `pwd`:/app -w=/app -e QGIS_PLUGIN_IN_CI=1 qgis/qgis:${{ matrix.docker_tags }} sh -c "pip3 install -q -r requirements-test.txt pytest-cov && xvfb-run -s '+extension GLX -screen 0 1024x768x24' pytest -v --cov --cov-report=xml"
+        run: docker run --rm --net=host --volume `pwd`:/app -w=/app -e QGIS_PLUGIN_IN_CI=1 qgis/qgis:${{ matrix.docker_tags }} sh -c "pip3 install -q -r requirements-test.txt pytest-cov && xvfb-run -s '+extension GLX -screen 0 1024x768x24' pytest -v --cov --cov-report=xml Catchment/test"
 
       # Upload coverage report. Will not work if the repo is private
       - name: Upload coverage to Codecov
@@ -59,10 +59,10 @@ jobs:
       - name: Run tests
         shell: pwsh
         run: |
-          $env:PATH="C:\Program Files\QGIS 3.16\bin;$env:PATH"
+          $env:PATH="C:\Program Files\QGIS 3.22.11\bin;$env:PATH"
           $env:QGIS_PLUGIN_IN_CI=1
           python-qgis-ltr.bat -m pip install -q -r requirements-test.txt
-          python-qgis-ltr.bat -m pytest -v
+          python-qgis-ltr.bat -m pytest -v Catchment/test
 
   pre-release:
     name: "Pre Release"
@@ -102,7 +102,7 @@ jobs:
       #      run: sudo apt-get update && sudo apt-get install qt5-default qttools5-dev-tools
 
       - name: Install qgis-plugin-ci
-        run: pip3 install qgis-plugin-ci
+        run: pip3 install git+https://github.com/GispoCoding/qgis-plugin-ci.git
 
       # When Transifex is wanted: --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
       - name: Deploy plugin
